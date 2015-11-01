@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.HashMap;
+
 import java.io.IOException;
 
 import android.util.Log;
@@ -20,6 +21,8 @@ import com.directions.route.RoutingListener;
 import com.google.android.gms.maps.model.LatLng;
 
 public class AttractionDatabase implements RoutingListener {
+    private FileDatabase file_database;
+
     private ArrayList<String> name_database;
     private HashMap<Integer, LatLng> latlng_database;
     private CostDatabase cost_database;
@@ -40,6 +43,7 @@ public class AttractionDatabase implements RoutingListener {
         places_to_be_routed = new ArrayList<>();
         places_to_be_updated = new ArrayList<>();
         this.context = context;
+        //file_database = new FileDatabase(context, "database.text");
     }
 
     public int size() {
