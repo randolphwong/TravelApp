@@ -1,10 +1,6 @@
 package com.example.liusu.travelapp;
 
-import android.content.Intent;
 import android.graphics.Color;
-import android.location.Address;
-import android.location.Geocoder;
-import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,14 +10,8 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import java.io.IOException;
-import java.util.List;
 import java.util.ArrayList;
 
-import com.directions.route.AbstractRouting;
-import com.directions.route.Route;
-import com.directions.route.Routing;
-import com.directions.route.RoutingListener;
 import com.example.liusu.travelapp.functionone.RouteInfo;
 import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.*;
@@ -29,7 +19,7 @@ import com.google.android.gms.maps.model.*;
 import com.example.liusu.travelapp.functionone.AttractionDatabase;
 import com.example.liusu.travelapp.functionone.PathPlanner;
 
-public class MapActivity extends AppCompatActivity implements RoutingListener {
+public class MapActivity extends AppCompatActivity {
     LatLng coord;
     String attraction;
     GoogleMap map;
@@ -112,6 +102,10 @@ public class MapActivity extends AppCompatActivity implements RoutingListener {
 
         attraction_database.add(result);
 
+        putMarkers();
+    }
+
+    public void putMarkers() {
         if (attraction_database.size() > 0) {
             // add markers
             for (int i = 0; i != markers.size(); ++i) {
@@ -128,7 +122,7 @@ public class MapActivity extends AppCompatActivity implements RoutingListener {
                 markers.add(map.addMarker(new MarkerOptions().position(latlng_of_attraction).title(name_of_attraction)));
             }
 
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(latlng_of_attraction, 13));
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(latlng_of_attraction, 12));
         }
     }
 
@@ -182,45 +176,5 @@ public class MapActivity extends AppCompatActivity implements RoutingListener {
             }
         }
         return database[currentRow][database[currentRow].length-1].toString();
-    }
-
-    @Override
-    public void onRoutingFailure() {
-        // The Routing request failed
-        Toast.makeText(this,"Something went wrong, Try again", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onRoutingStart() {
-        // The Routing Request starts
-    }
-
-    @Override
-    public void onRoutingCancelled() {
-        Toast.makeText(this,"Routing cancelled", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onRoutingSuccess(ArrayList<Route> route, int shortestRouteIndex) {
-        
-        ArrayList<Polyline> polylines = new ArrayList<Polyline>();
-
-        Route fastest_route = route.get(shortestRouteIndex);
-        int fastest_time = route.get(shortestRouteIndex).getDurationValue() / 60;
-
-        //for (int i = 0; i <route.size(); i++) {
-            //if (route.get(i).getDurationValue() < fastest_time) {
-                //fastest_route = route.get(i);
-                //fastest_time = route.get(i).getDurationValue();
-            //}
-        //}
-
-        PolylineOptions polyOptions = new PolylineOptions();
-        polyOptions.width(10);
-        polyOptions.addAll(fastest_route.getPoints());
-        Polyline polyline = map.addPolyline(polyOptions);
-        polylines.add(polyline);
-
-        Toast.makeText(getApplicationContext(),"Distance - "+ fastest_route.getDistanceValue()+": duration - "+ fastest_time,Toast.LENGTH_SHORT).show();
     }
 }
