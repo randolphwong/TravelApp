@@ -106,13 +106,9 @@ public class MapActivity extends AppCompatActivity {
     }
 
     public void putMarkers() {
-        if (attraction_database.size() > 0) {
-            // add markers
-            for (int i = 0; i != markers.size(); ++i) {
-                markers.get(i).remove();
-            }
-            markers.clear();
+        removeMarkers();
 
+        if (attraction_database.size() > 0) {
             LatLng latlng_of_attraction = null;
             String name_of_attraction;
 
@@ -126,13 +122,16 @@ public class MapActivity extends AppCompatActivity {
         }
     }
 
+    public void removeMarkers() {
+        for (int i = 0; i != markers.size(); ++i) {
+            markers.get(i).remove();
+        }
+        markers.clear();
+    }
+
     public void onPlot(View v) {
         if (attraction_database.size() > 0) {
-            // add polylines
-            for (int i = 0; i != polylines.size(); ++i) {
-                polylines.get(i).remove();
-            }
-            polylines.clear();
+            removePolylines();
 
             if (attraction_database.size() > 1 && attraction_database.isUpdated()) {
                 ArrayList<RouteInfo> path = PathPlanner.getPath(attraction_database.nameOf(0), 20, attraction_database);
@@ -142,13 +141,13 @@ public class MapActivity extends AppCompatActivity {
                     PolylineOptions polyOptions = new PolylineOptions();
                     switch (route_info.getTransportMode()) {
                         case TAXI:
-                            polyOptions.color(Color.GREEN);
+                            polyOptions.color(Color.RED);
                             break;
                         case BUS:
                             polyOptions.color(Color.BLUE);
                             break;
                         case FOOT:
-                            polyOptions.color(Color.YELLOW);
+                            polyOptions.color(Color.MAGENTA);
                             break;
                     }
                     polyOptions.width(10);
@@ -160,6 +159,13 @@ public class MapActivity extends AppCompatActivity {
             else
                 Log.i("i", "attraction database not yet ready.");
         }
+    }
+
+    public void removePolylines() {
+        for (int i = 0; i != polylines.size(); ++i) {
+            polylines.get(i).remove();
+        }
+        polylines.clear();
     }
 
     public String getResult(CharSequence input, CharSequence[][] database){
