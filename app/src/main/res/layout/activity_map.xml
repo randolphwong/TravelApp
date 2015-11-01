@@ -1,5 +1,5 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="wrap_content"
     android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
@@ -9,11 +9,12 @@
 
 
     <EditText
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/editText"
         android:layout_below="@+id/text"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:layout_alignEnd="@+id/text" />
 
     <Button
         android:layout_width="wrap_content"
@@ -46,9 +47,26 @@
         android:layout_height="wrap_content"
         android:text="Plot"
         android:id="@+id/button"
+        android:onClick="onPlot"
         android:layout_above="@+id/map"
-        android:layout_alignEnd="@+id/editText"
-        android:layout_marginEnd="39dp"
-        android:onClick="onPlot" />
+        android:layout_alignEnd="@+id/map" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="numberDecimal"
+        android:ems="5"
+        android:id="@+id/editTextBudget"
+        android:layout_below="@+id/text"
+        android:layout_alignEnd="@+id/button" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Budget"
+        android:id="@+id/textView"
+        android:layout_alignParentTop="true"
+        android:layout_alignStart="@+id/editTextBudget" />
 
 </RelativeLayout>

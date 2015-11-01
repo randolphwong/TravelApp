@@ -134,7 +134,16 @@ public class MapActivity extends AppCompatActivity {
             removePolylines();
 
             if (attraction_database.size() > 1 && attraction_database.isUpdated()) {
-                ArrayList<RouteInfo> path = PathPlanner.getPath(attraction_database.nameOf(0), 20, attraction_database);
+                Double budget = 0.0;
+
+                try {
+                    budget = Double.parseDouble(((EditText) findViewById(R.id.editTextBudget)).getText().toString());
+                }
+                catch (Exception ex) {
+                    Log.e("e", ex.getMessage());
+                }
+
+                ArrayList<RouteInfo> path = PathPlanner.getPath(attraction_database.nameOf(0), budget, attraction_database);
 
                 for (int i = 0; i != path.size(); ++i) {
                     RouteInfo route_info = path.get(i);
@@ -155,7 +164,7 @@ public class MapActivity extends AppCompatActivity {
                     Polyline polyline = map.addPolyline(polyOptions);
                     polylines.add(polyline);
                 }
-                Toast.makeText(getApplicationContext(), String.format("Journey time: %d\nJourney cost: %f",
+                Toast.makeText(getApplicationContext(), String.format("Journey time: %dmins\nJourney cost: $%f",
                         PathPlanner.durationOf(path, attraction_database), PathPlanner.costOf(path, attraction_database)), Toast.LENGTH_SHORT).show();
             }
             else
