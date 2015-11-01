@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import java.util.ArrayList;
 
@@ -26,6 +27,7 @@ public class MapActivity extends AppCompatActivity {
     ArrayList<Marker> markers;
     ArrayList<Polyline> polylines;
     AttractionDatabase attraction_database;
+    boolean plot_straight_route = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,17 +98,19 @@ public class MapActivity extends AppCompatActivity {
 
         EditText et = (EditText) findViewById(R.id.editText);
         CharSequence inp = et.getText().toString();
-        et.setText("");
 
         String result = getResult(inp, database);
         //Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT).show();
 
-        if (attraction_database.isUpdated())
-            attraction_database.add(result);
+        if (attraction_database.isUpdated()) {
+            et.setText("");
+            if (!attraction_database.contains(result)) {
+                attraction_database.add(result);
+                putMarkers();
+            }
+        }
         else
             Toast.makeText(getApplicationContext(), "Still downloading route information.", Toast.LENGTH_SHORT).show();
-
-        putMarkers();
     }
 
     public void putMarkers() {
@@ -149,27 +153,7 @@ public class MapActivity extends AppCompatActivity {
                 }
 
                 ArrayList<RouteInfo> path = PathPlanner.getPath(attraction_database.nameOf(0), budget, attraction_database);
-
-                for (int i = 0; i != path.size(); ++i) {
-                    RouteInfo route_info = path.get(i);
-                    PolylineOptions polyOptions = new PolylineOptions();
-                    switch (route_info.getTransportMode()) {
-                        case TAXI:
-                            polyOptions.color(Color.RED);
-                            break;
-                        case BUS:
-                            polyOptions.color(Color.BLUE);
-                            break;
-                        case FOOT:
-                            polyOptions.color(Color.MAGENTA);
-                            break;
-                    }
-                    polyOptions.width(10);
-//                    polyOptions.addAll(route_info.getRoute().getPoints());
-                    polyOptions.addAll(route_info.getEndPoints());
-                    Polyline polyline = map.addPolyline(polyOptions);
-                    polylines.add(polyline);
-                }
+                plotPath(path);
                 Toast.makeText(getApplicationContext(), String.format("Journey time: %dmins\nJourney cost: $%f",
                         PathPlanner.durationOf(path, attraction_database), PathPlanner.costOf(path, attraction_database)), Toast.LENGTH_SHORT).show();
         }
@@ -177,6 +161,39 @@ public class MapActivity extends AppCompatActivity {
             Log.i("i", "attraction database not yet ready.");
             Toast.makeText(getApplicationContext(), "Still downloading route information.", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public void plotPath(ArrayList<RouteInfo> path) {
+
+        for (int i = 0; i != path.size(); ++i) {
+            RouteInfo route_info = path.get(i);
+            PolylineOptions polyOptions = new PolylineOptions();
+            switch (route_info.getTransportMode()) {
+                case TAXI:
+                    polyOptions.color(Color.RED);
+                    break;
+                case BUS:
+                    polyOptions.color(Color.BLUE);
+                    break;
+                case FOOT:
+                    polyOptions.color(Color.MAGENTA);
+                    break;
+            }
+            polyOptions.width(10);
+
+            if (plot_straight_route)
+                polyOptions.addAll(route_info.getEndPoints());
+            else
+                polyOptions.addAll(route_info.getRoute().getPoints());
+
+                Polyline polyline = map.addPolyline(polyOptions);
+            polylines.add(polyline);
+        }
+    }
+
+    public void onChangePlotLine(View view) {
+        plot_straight_route = ((ToggleButton) view).isChecked();
+        onPlot(findViewById(R.id.buttonPlot));
     }
 
     public void removePolylines() {

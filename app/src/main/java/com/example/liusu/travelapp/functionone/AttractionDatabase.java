@@ -66,6 +66,10 @@ public class AttractionDatabase implements RoutingListener {
         return updated;
     }
 
+    public boolean contains(String attraction) {
+        return name_database.contains(attraction);
+    }
+
     public void add(String attraction) {
         if (!name_database.contains(attraction)) {
             name_database.add(attraction);
