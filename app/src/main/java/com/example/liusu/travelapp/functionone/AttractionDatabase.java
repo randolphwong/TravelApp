@@ -67,14 +67,15 @@ public class AttractionDatabase implements RoutingListener {
     }
 
     public void add(String attraction) {
-        updated = false;
         if (!name_database.contains(attraction)) {
             name_database.add(attraction);
 
             // to address problem of failed update
             updateLatLngDatabase(attraction);
-            if (size() > 1)
+            if (size() > 1) {
                 updateCostDatabase(attraction);
+                updated = false;
+            }
             Toast.makeText(context, "Adding " + attraction + " to database.", Toast.LENGTH_LONG).show();
         }
     }
