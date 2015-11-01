@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.io.IOException;
 
 import android.util.Log;
+import android.widget.Toast;
 import android.location.Address;
 import android.location.Geocoder;
 import android.content.Context;
@@ -74,6 +75,7 @@ public class AttractionDatabase implements RoutingListener {
             updateLatLngDatabase(attraction);
             if (size() > 1)
                 updateCostDatabase(attraction);
+            Toast.makeText(context, "Adding " + attraction + " to database.", Toast.LENGTH_LONG).show();
         }
     }
     
@@ -104,16 +106,16 @@ public class AttractionDatabase implements RoutingListener {
     private void updateCostDatabase(String attraction) {
         for (int i = 0; i != name_database.size(); ++i) {
             if (!attraction.equals(nameOf(i))) {
-                Log.i("i", "In updateCostDatabase");
+//                Log.i("i", "In updateCostDatabase");
                 for (TransportMode mode : TransportMode.values()) {
                     NodePairInfo info = new NodePairInfo(attraction, nameOf(i), mode);
                     NodePairInfo reverse_info = new NodePairInfo(nameOf(i), attraction, mode);
                     places_to_be_routed.add(info);
                     places_to_be_routed.add(reverse_info);
-                    Log.i("i", String.format("NodePairInfo(%s, %s, %s) added to places_to_be_routed",
-                            info.getSource(), info.getDestination(), info.getTransportMode()));
-                    Log.i("i", String.format("NodePairInfo(%s, %s, %s) added to places_to_be_routed",
-                            reverse_info.getSource(), reverse_info.getDestination(), reverse_info.getTransportMode()));
+//                    Log.i("i", String.format("NodePairInfo(%s, %s, %s) added to places_to_be_routed",
+//                            info.getSource(), info.getDestination(), info.getTransportMode()));
+//                    Log.i("i", String.format("NodePairInfo(%s, %s, %s) added to places_to_be_routed",
+//                            reverse_info.getSource(), reverse_info.getDestination(), reverse_info.getTransportMode()));
                 }
             }
         }
@@ -138,29 +140,30 @@ public class AttractionDatabase implements RoutingListener {
             routing.execute();
         }
         else {
-            Log.i("i", "appending Routes, current places_to_be_updated.size() is: " + places_to_be_updated.size());
+//            Log.i("i", "appending Routes, current places_to_be_updated.size() is: " + places_to_be_updated.size());
             appendRoutes();
         }
     }
 
     private void appendRoutes() {
-        Log.i("i", "In appendRoutes");
+//        Log.i("i", "In appendRoutes");
         for (int i = 0; i != places_to_be_updated.size(); ++i) {
             NodePairInfo info = places_to_be_updated.get(i);
             Integer source = indexOf(info.getSource());
             Integer destination = indexOf(info.getDestination());
             RouteInfo route_info = info.getRouteInfo();
             cost_database.add(source, destination, route_info);
-            Log.i("i", String.format("cost_database.add(%d, %d, %s)", source, destination, route_info.getTransportMode()));
+//            Log.i("i", String.format("cost_database.add(%d, %d, %s)", source, destination, route_info.getTransportMode()));
         }
         places_to_be_updated.clear();
         updated = true;
+        Log.i("i", "Finish updating database");
     }
 
     @Override
     public void onRoutingFailure() {
         // The Routing request failed
-        Log.i("i", "Routing failed");
+        Log.e("e", "Routing failed");
     }
 
     @Override
@@ -170,7 +173,7 @@ public class AttractionDatabase implements RoutingListener {
 
     @Override
     public void onRoutingCancelled() {
-        Log.i("i", "Routing cancelled");
+        Log.e("e", "Routing cancelled");
     }
 
     @Override
@@ -179,8 +182,8 @@ public class AttractionDatabase implements RoutingListener {
         if (route.size() != 0) {
             info.setRoute(route.get(shortestRouteIndex));
             places_to_be_updated.add(info);
-            Log.i("i", String.format("Routing success, NodePairInfo(%s, %s, %s) added to places_to_be_updated",
-                    info.getSource(), info.getDestination(), info.getTransportMode()));
+//            Log.i("i", String.format("Routing success, NodePairInfo(%s, %s, %s) added to places_to_be_updated",
+//                    info.getSource(), info.getDestination(), info.getTransportMode()));
             places_to_be_routed.remove(places_to_be_routed.size() - 1);
         }
         else {

@@ -25,6 +25,6 @@ public class TravelCost {
 
     public void addRouteInfo(RouteInfo route_info) {
         route_infos.put(route_info.getTransportMode(), route_info);
-        Log.i("i", "route_info for transport mode: " + route_info.getTransportMode() + " added to TravelCost.");
+//        Log.i("i", "route_info for transport mode: " + route_info.getTransportMode() + " added to TravelCost.");
     }
 }

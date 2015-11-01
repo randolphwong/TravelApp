@@ -98,7 +98,7 @@ public class MapActivity extends AppCompatActivity {
         CharSequence inp = et.getText().toString();
 
         String result = getResult(inp, database);
-        Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT).show();
 
         attraction_database.add(result);
 
