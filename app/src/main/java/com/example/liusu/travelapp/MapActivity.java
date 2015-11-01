@@ -100,7 +100,10 @@ public class MapActivity extends AppCompatActivity {
         String result = getResult(inp, database);
         //Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT).show();
 
-        attraction_database.add(result);
+        if (attraction_database.isUpdated())
+            attraction_database.add(result);
+        else
+            Toast.makeText(getApplicationContext(), "Still downloading route information.", Toast.LENGTH_SHORT).show();
 
         putMarkers();
     }
@@ -130,10 +133,11 @@ public class MapActivity extends AppCompatActivity {
     }
 
     public void onPlot(View v) {
-        if (attraction_database.size() > 0) {
+        if (attraction_database.size() <= 1) {
+            return;
+        }
+        if (attraction_database.isUpdated()) {
             removePolylines();
-
-            if (attraction_database.size() > 1 && attraction_database.isUpdated()) {
                 Double budget = 0.0;
 
                 try {
@@ -160,15 +164,17 @@ public class MapActivity extends AppCompatActivity {
                             break;
                     }
                     polyOptions.width(10);
-                    polyOptions.addAll(route_info.getRoute().getPoints());
+//                    polyOptions.addAll(route_info.getRoute().getPoints());
+                    polyOptions.addAll(route_info.getEndPoints());
                     Polyline polyline = map.addPolyline(polyOptions);
                     polylines.add(polyline);
                 }
                 Toast.makeText(getApplicationContext(), String.format("Journey time: %dmins\nJourney cost: $%f",
                         PathPlanner.durationOf(path, attraction_database), PathPlanner.costOf(path, attraction_database)), Toast.LENGTH_SHORT).show();
-            }
-            else
-                Log.i("i", "attraction database not yet ready.");
+        }
+        else {
+            Log.i("i", "attraction database not yet ready.");
+            Toast.makeText(getApplicationContext(), "Still downloading route information.", Toast.LENGTH_SHORT).show();
         }
     }
 

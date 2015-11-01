@@ -1,12 +1,18 @@
 package com.example.liusu.travelapp.functionone;
 
 import com.directions.route.Route;
+import com.google.android.gms.maps.model.LatLng;
+
+import java.util.ArrayList;
 
 public class RouteInfo {
     private Route route;
     private TransportMode transport_mode;
+    private ArrayList<LatLng> latlngs;
 
-    public RouteInfo() {}
+    public RouteInfo() {
+        latlngs = new ArrayList<>();
+    }
 
     public RouteInfo(Route route, TransportMode transport_mode) {
         this.route = route;
@@ -48,5 +54,13 @@ public class RouteInfo {
                 break;
         }
         return cost;
+    }
+
+    public void addLatLng(LatLng latlng) {
+        latlngs.add(latlng);
+    }
+
+    public ArrayList<LatLng> getEndPoints() {
+        return latlngs;
     }
 }

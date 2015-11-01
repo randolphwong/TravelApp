@@ -152,6 +152,9 @@ public class AttractionDatabase implements RoutingListener {
             Integer source = indexOf(info.getSource());
             Integer destination = indexOf(info.getDestination());
             RouteInfo route_info = info.getRouteInfo();
+            // add in latlng infomations
+            route_info.addLatLng(latlng_database.get(source));
+            route_info.addLatLng(latlng_database.get(destination));
             cost_database.add(source, destination, route_info);
 //            Log.i("i", String.format("cost_database.add(%d, %d, %s)", source, destination, route_info.getTransportMode()));
         }
