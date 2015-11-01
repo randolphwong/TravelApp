@@ -155,6 +155,8 @@ public class MapActivity extends AppCompatActivity {
                     Polyline polyline = map.addPolyline(polyOptions);
                     polylines.add(polyline);
                 }
+                Toast.makeText(getApplicationContext(), String.format("Journey time: %d\nJourney cost: %f",
+                        PathPlanner.durationOf(path, attraction_database), PathPlanner.costOf(path, attraction_database)), Toast.LENGTH_SHORT).show();
             }
             else
                 Log.i("i", "attraction database not yet ready.");

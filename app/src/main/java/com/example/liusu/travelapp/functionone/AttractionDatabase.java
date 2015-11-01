@@ -250,6 +250,22 @@ public class AttractionDatabase implements RoutingListener {
         return sum;
     }
 
+    public int travelTimeOf(ArrayList<RouteInfo> path) {
+        int sum = 0;
+        for (int i = 0; i != path.size(); ++i) {
+            sum += path.get(i).getDuration();
+        }
+        return sum;
+    }
+
+    public double travelCostOf(ArrayList<RouteInfo> path) {
+        double sum = 0;
+        for (int i = 0; i != path.size(); ++i) {
+            sum += path.get(i).getCost();
+        }
+        return sum;
+    }
+
     public RouteInfo routeInfoBetween(String source, String destination, String transport_mode) {
         return cost_database.getRouteInfo(indexOf(source), indexOf(destination), TransportMode.convertString(transport_mode));
     }

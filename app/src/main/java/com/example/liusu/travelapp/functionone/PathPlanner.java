@@ -38,14 +38,11 @@ public class PathPlanner {
         }
     }
 
-    // to change
-/*
- *    public int timeTaken(String[][] path) {
- *        return attraction_data.travelTimeOf(path);
- *    }
- *
- *    public double cost(String[][] path) {
- *        return attraction_data.travelCostOf(path);
- *    }
- */
+    public static int durationOf(ArrayList<RouteInfo> path, AttractionDatabase attraction_database) {
+        return attraction_database.travelTimeOf(path);
+    }
+
+    public static double costOf(ArrayList<RouteInfo> path, AttractionDatabase attraction_database) {
+        return attraction_database.travelCostOf(path);
+    }
 }
