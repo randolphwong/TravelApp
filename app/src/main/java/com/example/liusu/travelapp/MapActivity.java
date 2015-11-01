@@ -97,7 +97,7 @@ public class MapActivity extends AppCompatActivity {
         CharSequence database[][] = base.getData();
 
         EditText et = (EditText) findViewById(R.id.editText);
-        CharSequence inp = et.getText().toString();
+        CharSequence inp = et.getText().toString().toLowerCase();
 
         String result = getResult(inp, database);
         //Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT).show();
