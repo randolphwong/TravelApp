@@ -7,6 +7,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.example.liusu.travelapp.AdditionalFunction.AsyncTaskTestActivity;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -39,6 +41,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void searchPlace(View view){
         Intent intent = new Intent(this,MapActivity.class);
+        startActivity(intent);
+    }
+
+    public void testAsycn(View view) {
+        Intent intent = new Intent(this, AsyncTaskTestActivity.class);
         startActivity(intent);
     }
 }

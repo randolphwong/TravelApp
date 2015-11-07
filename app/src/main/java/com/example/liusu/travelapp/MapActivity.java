@@ -23,7 +23,7 @@ import com.example.liusu.travelapp.functionone.PathPlanner;
 public class MapActivity extends AppCompatActivity {
     LatLng coord;
     String attraction;
-    GoogleMap map;
+    public static GoogleMap map;
     ArrayList<Marker> markers;
     ArrayList<Polyline> polylines;
     AttractionDatabase attraction_database;
