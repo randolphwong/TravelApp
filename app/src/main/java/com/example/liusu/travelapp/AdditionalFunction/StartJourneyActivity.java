@@ -1,6 +1,7 @@
 package com.example.liusu.travelapp.AdditionalFunction;
 
 import android.location.Location;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -144,5 +145,9 @@ public class StartJourneyActivity extends AppCompatActivity implements GoogleApi
         TextView display = (TextView) findViewById(R.id.display);
         display.setText(first + second);
         onResume();
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(this)
+                        .setSmallIcon(R.drawable.cast_ic_notification_0)
+                        .setContentTitle("You are here");
     }
 }
