@@ -34,7 +34,6 @@ public class StartJourneyActivity extends AppCompatActivity implements GoogleApi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start_journey);
-//        new PostTask().execute(5);
         buildGoogleApiClient();
         createLocationRequest();
     }
