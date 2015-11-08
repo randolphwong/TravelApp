@@ -1,7 +1,7 @@
 package com.example.liusu.travelapp.AdditionalFunction;
 
 import android.location.Location;
-import android.os.AsyncTask;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -34,8 +34,7 @@ public class StartJourneyActivity extends AppCompatActivity implements GoogleApi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_async_task_test);
-//        new PostTask().execute(5);
+        setContentView(R.layout.activity_start_journey);
         buildGoogleApiClient();
         createLocationRequest();
     }
@@ -87,9 +86,17 @@ public class StartJourneyActivity extends AppCompatActivity implements GoogleApi
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onPause() {
+        super.onPause();
         stopLocationUpdates();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mGoogleApiClient.isConnected()) {
+            startLocationUpdates();
+        }
     }
 
     protected synchronized void buildGoogleApiClient() {
@@ -108,7 +115,9 @@ public class StartJourneyActivity extends AppCompatActivity implements GoogleApi
         Toast.makeText(getApplicationContext(), "Current distance is: " + currentDistance, Toast.LENGTH_SHORT).show();
     }
 
-
+    public void reachDestination(View view) {
+        onPause();
+    }
     protected void stopLocationUpdates() {
         LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
     }
@@ -120,13 +129,13 @@ public class StartJourneyActivity extends AppCompatActivity implements GoogleApi
 
     protected void createLocationRequest() {
         mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(10000);
-        mLocationRequest.setFastestInterval(5000);
+        mLocationRequest.setInterval(5000);
+        mLocationRequest.setFastestInterval(3000);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
     protected void startLocationUpdates() {
-        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, (LocationListener) this);
+        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
     }
     public void update(View view) {
         EditText firstPart = (EditText) findViewById(R.id.firstpart);
@@ -135,5 +144,10 @@ public class StartJourneyActivity extends AppCompatActivity implements GoogleApi
         String second = secondPart.getText().toString();
         TextView display = (TextView) findViewById(R.id.display);
         display.setText(first + second);
+        onResume();
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(this)
+                        .setSmallIcon(R.drawable.cast_ic_notification_0)
+                        .setContentTitle("You are here");
     }
 }
