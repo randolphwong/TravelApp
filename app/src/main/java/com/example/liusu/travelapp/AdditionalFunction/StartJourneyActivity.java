@@ -24,7 +24,7 @@ import com.google.maps.android.SphericalUtil;
 import java.text.DateFormat;
 import java.util.Date;
 
-public class AsyncTaskTestActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+public class StartJourneyActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
     public String currentLatitude, currentLongitude;
@@ -136,25 +136,4 @@ public class AsyncTaskTestActivity extends AppCompatActivity implements GoogleAp
         TextView display = (TextView) findViewById(R.id.display);
         display.setText(first + second);
     }
-//    private class PostTask extends AsyncTask<Integer, Integer, String> {
-//        @Override
-//        protected String doInBackground(Integer... params) {
-//
-//            return "You have arrived at you destination!!!";
-//        }
-//
-//        @Override
-//        protected void onProgressUpdate(Integer... values) {
-//            super.onProgressUpdate(values);
-//            Toast.makeText(getApplicationContext(), "Current Distance is " + values[0], Toast.LENGTH_SHORT).show();
-//        }
-//
-//
-//        @Override
-//        protected void onPostExecute(String result) {
-//            super.onPostExecute(result);
-//            Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT).show();
-//        }
-//
-//    }
 }

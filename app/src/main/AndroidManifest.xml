@@ -44,10 +44,10 @@
         <!--
             meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyBFcceKSrG2WYYAnnD9Qd1VPXs4f0cPLp4"/
+            android:value="AIzaSyBOw9Gl1m1DRrV0bNnyi_uphhwbIHQBeJQ"/
         -->
         <activity
-            android:name=".AdditionalFunction.AsyncTaskTestActivity"
+            android:name=".AdditionalFunction.StartJourneyActivity"
             android:label="@string/title_activity_async_task_test" />
 
         <meta-data

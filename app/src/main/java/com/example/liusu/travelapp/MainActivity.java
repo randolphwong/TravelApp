@@ -7,7 +7,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.example.liusu.travelapp.AdditionalFunction.AsyncTaskTestActivity;
+import com.example.liusu.travelapp.AdditionalFunction.StartJourneyActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void testAsycn(View view) {
-        Intent intent = new Intent(this, AsyncTaskTestActivity.class);
+        Intent intent = new Intent(this, StartJourneyActivity.class);
         startActivity(intent);
     }
 }
