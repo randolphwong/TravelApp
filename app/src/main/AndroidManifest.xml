@@ -20,6 +20,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
+            android:configChanges="orientation|screenSize"
             android:name=".MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
@@ -29,6 +30,7 @@
             </intent-filter>
         </activity>
         <activity
+            android:configChanges="orientation|screenSize"
             android:name=".MapActivity"
             android:label="@string/title_activity_map" >
         </activity>
@@ -49,6 +51,7 @@
             android:value="AIzaSyBOw9Gl1m1DRrV0bNnyi_uphhwbIHQBeJQ"/
         -->
         <activity
+            android:configChanges="orientation|screenSize"
             android:name=".AdditionalFunction.StartJourneyActivity"
             android:label="@string/title_activity_async_task_test" />
 
