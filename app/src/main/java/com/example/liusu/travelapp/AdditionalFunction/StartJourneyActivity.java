@@ -1,5 +1,6 @@
 package com.example.liusu.travelapp.AdditionalFunction;
 
+import android.app.NotificationManager;
 import android.location.Location;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -30,7 +31,20 @@ public class StartJourneyActivity extends AppCompatActivity implements GoogleApi
     public String currentLatitude, currentLongitude;
     public Location myCurrentLocation;
     public String mLastUpdateTime;
-    public LatLng testSentosa = new LatLng(1.24940, 103.83032);
+    public LatLng destination = new LatLng(1.24940, 103.83032); //test: sentosa
+    private final static int proximity = 20000;
+    NotificationCompat.Builder mBuilder =
+            new NotificationCompat.Builder(this)
+                    .setSmallIcon(R.drawable.cast_ic_notification_0)
+                    .setContentTitle("You are here")
+                    .setAutoCancel(true)
+                    .setVibrate(new long[]{0,1000,200,1000,200,1000}).setContentText("Reached destination!!");
+
+
+    // Sets an ID for the notification
+    int mNotificationId = 001;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -111,8 +125,18 @@ public class StartJourneyActivity extends AppCompatActivity implements GoogleApi
 
     private void updateUI(Location location) {
         LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
-        double currentDistance = SphericalUtil.computeDistanceBetween(currentLocation, testSentosa);
+        double currentDistance = SphericalUtil.computeDistanceBetween(currentLocation, destination);
         Toast.makeText(getApplicationContext(), "Current distance is: " + currentDistance, Toast.LENGTH_SHORT).show();
+        if (currentDistance<proximity){
+            // Gets an instance of the NotificationManager service
+            NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+// Builds the notification and issues it.
+            mNotifyMgr.notify(mNotificationId, mBuilder.build());
+
+            Toast.makeText(getApplicationContext(), "Entered proximity range!", Toast.LENGTH_SHORT).show();
+
+        }
+
     }
 
     public void reachDestination(View view) {
@@ -129,7 +153,7 @@ public class StartJourneyActivity extends AppCompatActivity implements GoogleApi
 
     protected void createLocationRequest() {
         mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(5000);
+        mLocationRequest.setInterval(10000);
         mLocationRequest.setFastestInterval(3000);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
@@ -145,9 +169,6 @@ public class StartJourneyActivity extends AppCompatActivity implements GoogleApi
         TextView display = (TextView) findViewById(R.id.display);
         display.setText(first + second);
         onResume();
-        NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.drawable.cast_ic_notification_0)
-                        .setContentTitle("You are here");
+
     }
 }
