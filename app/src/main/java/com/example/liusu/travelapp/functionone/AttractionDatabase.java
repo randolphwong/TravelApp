@@ -13,6 +13,10 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.content.Context;
 
+
+import com.example.liusu.travelapp.sqldatabase.DBRoute;
+import com.example.liusu.travelapp.sqldatabase.MyDBHandler;
+
 import com.directions.route.AbstractRouting;
 import com.directions.route.Route;
 import com.directions.route.Routing;
@@ -34,6 +38,8 @@ public class AttractionDatabase implements RoutingListener {
 
     private boolean updated = true;
 
+    private MyDBHandler dbhandler;
+
     public AttractionDatabase() {}
 
     public AttractionDatabase(Context context) {
@@ -43,7 +49,7 @@ public class AttractionDatabase implements RoutingListener {
         places_to_be_routed = new ArrayList<>();
         places_to_be_updated = new ArrayList<>();
         this.context = context;
-        //file_database = new FileDatabase(context, "database.text");
+        dbhandler = new MyDBHandler(context, null, null, 1);
     }
 
     public int size() {
@@ -168,8 +174,24 @@ public class AttractionDatabase implements RoutingListener {
 //            Log.i("i", String.format("cost_database.add(%d, %d, %s)", source, destination, route_info.getTransportMode()));
         }
         places_to_be_updated.clear();
+        updateSQLDatabase();
         updated = true;
         Log.i("i", "Finish updating database");
+    }
+
+    private void updateSQLDatabase() {
+        if (size() > 1) {
+            String new_attraction = nameOf(size() - 1);
+            for (int i = 0; i != size(); ++i) {
+                String old_attraction = nameOf(i);
+                DBRoute dbroute = new DBRoute(old_attraction, new_attraction, "x coord", "y coord", timeBetween(i, size() - 1, TransportMode.FOOT),
+                        timeBetween(i, size() - 1, TransportMode.BUS),
+                        timeBetween(i, size() - 1, TransportMode.TAXI),
+                        costBetween(i, size() - 1, TransportMode.BUS),
+                        costBetween(i, size() - 1, TransportMode.TAXI), "no desc");
+                dbhandler.addLocations(dbroute);
+            }
+        }
     }
 
     @Override
