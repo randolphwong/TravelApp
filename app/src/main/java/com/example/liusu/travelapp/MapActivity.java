@@ -14,8 +14,6 @@ import android.widget.ToggleButton;
 import java.util.ArrayList;
 
 import com.example.liusu.travelapp.functionone.RouteInfo;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.*;
 
