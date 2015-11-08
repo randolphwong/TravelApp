@@ -36,10 +36,24 @@ public class MapActivity extends AppCompatActivity {
         markers = new ArrayList<>();
         polylines = new ArrayList<>();
         attraction_database = new AttractionDatabase(getApplicationContext());
-        SupportMapFragment mapFragment =
-                (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-        map = mapFragment.getMap();
-        map.setMyLocationEnabled(true);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        try {
+            SupportMapFragment mapFragment =
+                    (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+            map = mapFragment.getMap();
+            map.setMyLocationEnabled(true);
+        }
+        catch (NullPointerException e) {
+            Toast.makeText(getApplicationContext(), "Google Play services is not available.", Toast.LENGTH_SHORT).show();
+            Log.e("e", "null pointer");
+        }
+        catch (Exception e) {
+            Log.e("e", "Some other exception");
+        }
     }
 
 
