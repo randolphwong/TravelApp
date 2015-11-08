@@ -5,3 +5,5 @@ build/
 *.log
 .gradle
 .idea
+local.properties
+
