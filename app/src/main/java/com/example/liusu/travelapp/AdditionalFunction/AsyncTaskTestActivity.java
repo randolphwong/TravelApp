@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.liusu.travelapp.R;
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
@@ -23,7 +24,7 @@ import com.google.maps.android.SphericalUtil;
 import java.text.DateFormat;
 import java.util.Date;
 
-public class AsyncTaskTestActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, LocationListener {
+public class AsyncTaskTestActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
     public String currentLatitude, currentLongitude;
@@ -34,7 +35,7 @@ public class AsyncTaskTestActivity extends AppCompatActivity implements GoogleAp
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_async_task_test);
-        new PostTask().execute(5);
+//        new PostTask().execute(5);
         buildGoogleApiClient();
         createLocationRequest();
     }
@@ -62,19 +63,6 @@ public class AsyncTaskTestActivity extends AppCompatActivity implements GoogleAp
     }
 
     @Override
-    public void onLocationChanged(Location location) {
-        myCurrentLocation = location;
-        mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
-        updateUI(myCurrentLocation);
-    }
-
-    private void updateUI(Location location) {
-        LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
-        double currentDistance = SphericalUtil.computeDistanceBetween(currentLocation, testSentosa);
-        Toast.makeText(getApplicationContext(), "Current distance is: " + currentDistance, Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
     public void onConnected(Bundle connectionHint) {
         Toast.makeText(getApplicationContext(), "Connected", Toast.LENGTH_SHORT).show();
         Location myLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
@@ -87,10 +75,39 @@ public class AsyncTaskTestActivity extends AppCompatActivity implements GoogleAp
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
+    public void onLocationChanged(Location location) {
+        myCurrentLocation = location;
+        mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
+        updateUI(myCurrentLocation);
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        Log.e("g", "onConnectionFailed");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
         stopLocationUpdates();
     }
+
+    protected synchronized void buildGoogleApiClient() {
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .setAccountName("liusumy@gmail.com")
+                .build();
+        mGoogleApiClient.connect();
+    }
+
+    private void updateUI(Location location) {
+        LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
+        double currentDistance = SphericalUtil.computeDistanceBetween(currentLocation, testSentosa);
+        Toast.makeText(getApplicationContext(), "Current distance is: " + currentDistance, Toast.LENGTH_SHORT).show();
+    }
+
 
     protected void stopLocationUpdates() {
         LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
@@ -99,14 +116,6 @@ public class AsyncTaskTestActivity extends AppCompatActivity implements GoogleAp
     @Override
     public void onConnectionSuspended(int a) {
         Log.d("t", "connection suspended");
-    }
-
-    protected synchronized void buildGoogleApiClient() {
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-//                .addOnConnectionFailedListener((GoogleApiClient.OnConnectionFailedListener) this)
-                .addApi(LocationServices.API)
-                .build();
     }
 
     protected void createLocationRequest() {
@@ -127,25 +136,25 @@ public class AsyncTaskTestActivity extends AppCompatActivity implements GoogleAp
         TextView display = (TextView) findViewById(R.id.display);
         display.setText(first + second);
     }
-    private class PostTask extends AsyncTask<Integer, Integer, String> {
-        @Override
-        protected String doInBackground(Integer... params) {
-
-            return "You have arrived at you destination!!!";
-        }
-
-        @Override
-        protected void onProgressUpdate(Integer... values) {
-            super.onProgressUpdate(values);
-            Toast.makeText(getApplicationContext(), "Current Distance is " + values[0], Toast.LENGTH_SHORT).show();
-        }
-
-
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-            Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT).show();
-        }
-
-    }
+//    private class PostTask extends AsyncTask<Integer, Integer, String> {
+//        @Override
+//        protected String doInBackground(Integer... params) {
+//
+//            return "You have arrived at you destination!!!";
+//        }
+//
+//        @Override
+//        protected void onProgressUpdate(Integer... values) {
+//            super.onProgressUpdate(values);
+//            Toast.makeText(getApplicationContext(), "Current Distance is " + values[0], Toast.LENGTH_SHORT).show();
+//        }
+//
+//
+//        @Override
+//        protected void onPostExecute(String result) {
+//            super.onPostExecute(result);
+//            Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT).show();
+//        }
+//
+//    }
 }
