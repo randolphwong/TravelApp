@@ -14,6 +14,8 @@ import android.widget.ToggleButton;
 import java.util.ArrayList;
 
 import com.example.liusu.travelapp.functionone.RouteInfo;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.*;
 
@@ -36,11 +38,12 @@ public class MapActivity extends AppCompatActivity {
         markers = new ArrayList<>();
         polylines = new ArrayList<>();
         attraction_database = new AttractionDatabase(getApplicationContext());
-
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         map = mapFragment.getMap();
+        map.setMyLocationEnabled(true);
     }
+
 
     public void onMapReady() {
         map.addMarker(new MarkerOptions().position(coord).title(attraction));
