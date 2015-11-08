@@ -1,9 +1,16 @@
 package com.example.liusu.travelapp.AdditionalFunction;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+
 
 /**
  * Created by WSY on 7/11/15.
@@ -12,7 +19,7 @@ import android.location.LocationManager;
  *
  */
 
-public class MeasureDistance {
+public class MeasureDistance extends Activity {
     Context mContext;
     public final static double AVERAGE_RADIUS_OF_EARTH = 6371000; //6371km, in meters here
 
@@ -41,6 +48,12 @@ public class MeasureDistance {
         hdCrit.setAccuracy(Criteria.ACCURACY_COARSE);
 
         mlocProvider = locationManager.getBestProvider(hdCrit, true);
+
+        //Context object required, so change this to mContext -siyuan
+        if ( ContextCompat.checkSelfPermission(mContext, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED ) {
+
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION},1 ); //requestCode
+        }
 
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3000, 1000, lmh);
         Location currentLocation = locationManager.getLastKnownLocation(mlocProvider);
