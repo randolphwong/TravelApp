@@ -16,6 +16,7 @@ import android.content.Context;
 
 import com.example.liusu.travelapp.sqldatabase.DBRoute;
 import com.example.liusu.travelapp.sqldatabase.MyDBHandler;
+import com.example.liusu.travelapp.sqldatabase.LatLngParser;
 
 import com.directions.route.AbstractRouting;
 import com.directions.route.Route;
@@ -85,10 +86,20 @@ public class AttractionDatabase implements RoutingListener {
             name_database.add(attraction);
 
             // to address problem of failed update
+            // check if location already in database
             updateLatLngDatabase(attraction);
             if (size() > 1) {
-                updateCostDatabase(attraction);
-                updated = false;
+                String[] route_details = dbhandler.getRouteDetails(nameOf(0), attraction);
+                if (route_details[0] == null) {
+                    updateCostDatabase(attraction);
+                    updated = false;
+                } else {
+                    //Log.i("i", route_details[2]);
+                    //Log.i("i", route_details[3]);
+                    Log.i("i", "Route details:");
+                    for (String s : route_details)
+                        Log.i("i", s);
+                }
             }
             Toast.makeText(context, "Adding " + attraction + " to database.", Toast.LENGTH_LONG).show();
         }
@@ -182,9 +193,14 @@ public class AttractionDatabase implements RoutingListener {
     private void updateSQLDatabase() {
         if (size() > 1) {
             String new_attraction = nameOf(size() - 1);
-            for (int i = 0; i != size(); ++i) {
+            for (int i = 0; i != size() - 1; ++i) {
                 String old_attraction = nameOf(i);
-                DBRoute dbroute = new DBRoute(old_attraction, new_attraction, "x coord", "y coord", timeBetween(i, size() - 1, TransportMode.FOOT),
+                String[] latlng_string = LatLngParser.latLngToString(
+                        routeInfoBetween(old_attraction, new_attraction, TransportMode.toString(TransportMode.TAXI)).getPoints());
+                Log.i("i", latlng_string[0]);
+                Log.i("i", latlng_string[1]);
+                DBRoute dbroute = new DBRoute(old_attraction, new_attraction, latlng_string[0], latlng_string[1], 
+                        timeBetween(i, size() - 1, TransportMode.FOOT),
                         timeBetween(i, size() - 1, TransportMode.BUS),
                         timeBetween(i, size() - 1, TransportMode.TAXI),
                         costBetween(i, size() - 1, TransportMode.BUS),

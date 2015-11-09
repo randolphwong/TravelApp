@@ -63,4 +63,8 @@ public class RouteInfo {
     public ArrayList<LatLng> getEndPoints() {
         return latlngs;
     }
+
+    public ArrayList<LatLng> getPoints() {
+        return (ArrayList<LatLng>) route.getPoints();
+    }
 }

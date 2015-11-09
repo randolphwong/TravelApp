@@ -111,7 +111,7 @@ public class MyDBHandler extends SQLiteOpenHelper {
         String route = location1 + " to " + location2;
         long i=1;
         Cursor c = db.query(TABLE_LOCATIONS, columns, COLUMN_ROUTENAME +" =?", new String[]{route},null,null,null);
-        String[] s = new String[]{null,"location do not exist in database",null,null};
+        String[] s = new String[]{null,"location do not exist in database",null,null,null,null,null,null,null};
         if(c!=null && !c.isAfterLast()){
             c.moveToFirst();
             s[0] = c.getString(0);
