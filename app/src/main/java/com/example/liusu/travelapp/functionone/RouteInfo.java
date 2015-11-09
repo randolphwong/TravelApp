@@ -18,6 +18,7 @@ public class RouteInfo {
     }
 
     public RouteInfo(TransportMode transport_mode) {
+        this();
         this.transport_mode = transport_mode;
     }
 
@@ -31,12 +32,31 @@ public class RouteInfo {
         this.transport_mode = transport_mode;
     }
 
+    public void setDistance(double distance) {
+        this.distance = distance;
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
+
+    public void setLatLng(ArrayList<LatLng> latlngs) {
+        all_latlngs = latlngs;
+
+        end_latlngs.add(all_latlngs.get(0));
+        end_latlngs.add(all_latlngs.get(all_latlngs.size() - 1));
+    }
+
     public TransportMode getTransportMode() {
         return transport_mode;
     }
 
     public int getDuration() {
         return duration;
+    }
+
+    public double getDistance() {
+        return distance;
     }
 
     public double getCost() {
