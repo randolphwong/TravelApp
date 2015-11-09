@@ -199,7 +199,7 @@ public class MapActivity extends AppCompatActivity {
             if (plot_straight_route)
                 polyOptions.addAll(route_info.getEndPoints());
             else
-                polyOptions.addAll(route_info.getRoute().getPoints());
+                polyOptions.addAll(route_info.getPoints());
 
                 Polyline polyline = map.addPolyline(polyOptions);
             polylines.add(polyline);
