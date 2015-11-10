@@ -144,14 +144,14 @@ public class AttractionDatabase implements RoutingListener {
         //Log.i("i", "first latlng of latlng array = " + latlng_array.get(0));
         //Log.i("i", "last latlng of latlng array = " + latlng_array.get(latlng_array.size() - 1));
         foot_route_info.setLatLng(all_latlngs.get(TransportMode.FOOT));
-        foot_route_info.setDuration(Integer.valueOf(route_details[3]));
+        foot_route_info.setDuration(Integer.parseInt(route_details[3]));
         foot_route_info.setDistance(0);
         bus_route_info.setLatLng(all_latlngs.get(TransportMode.BUS));
-        bus_route_info.setDuration(Integer.valueOf(route_details[4]));
-        bus_route_info.setDistance(6);
+        bus_route_info.setDuration(Integer.parseInt(route_details[4]));
+        bus_route_info.setDistance(Double.parseDouble(route_details[6]));
         taxi_route_info.setLatLng(all_latlngs.get(TransportMode.TAXI));
-        taxi_route_info.setDuration(Integer.valueOf(route_details[5]));
-        taxi_route_info.setDistance(7);
+        taxi_route_info.setDuration(Integer.parseInt(route_details[5]));
+        taxi_route_info.setDistance(Double.parseDouble(route_details[7]));
 
         cost_database.add(indexOf(attraction1), indexOf(attraction2), foot_route_info);
         cost_database.add(indexOf(attraction1), indexOf(attraction2), bus_route_info);
