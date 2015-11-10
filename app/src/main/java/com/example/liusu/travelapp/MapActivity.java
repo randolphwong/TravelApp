@@ -122,6 +122,8 @@ public class MapActivity extends AppCompatActivity {
             if (!attraction_database.contains(result)) {
                 attraction_database.add(result);
                 putMarkers();
+                if (attraction_database.isUpdated())
+                    onPlot(findViewById(R.id.buttonPlot));
             }
         }
         else
