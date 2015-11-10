@@ -92,7 +92,11 @@ public class AttractionDatabase implements RoutingListener {
             if (updateLatLngDatabase(attraction) && size() > 1) {
                 Log.i("i", "Adding " + attraction);
                 updated = false;
+                long start_update = System.nanoTime();
                 updateCostDatabase(attraction);
+                long end_update = System.nanoTime();
+                long update_time = end_update - start_update;
+                Log.i("Performance test", "Sync/Download took: " + ((double) update_time / 1000000) + "ms.");
             }
             //Toast.makeText(context, "Adding " + attraction + " to database.", Toast.LENGTH_LONG).show();
         }
