@@ -120,15 +120,6 @@ public class AttractionDatabase implements RoutingListener {
             updated = true;
     }
 
-    private void syncWithSQL(String latest_attraction) {
-        for (int i = 0; i != size() - 1; ++i) {
-            String previous_attraction = nameOf(i);
-            syncWithSQL(previous_attraction, latest_attraction);
-            syncWithSQL(latest_attraction, previous_attraction);
-        }
-        updated = true;
-    }
-
     private void syncWithSQL(String attraction1, String attraction2) {
         // returns detail of the route in String[] format, 0-columnid, 1-longcoord, 2-latcoord, 3-walktime, 4-bustime, 5-taxitime, 6-buscost, 7-taxicost, 8-description
         //public static EnumMap<TransportMode, ArrayList<LatLng>> stringToLatLngForAllMode(String[] latlng_string) {
@@ -169,6 +160,20 @@ public class AttractionDatabase implements RoutingListener {
     
     private boolean updateLatLngDatabase(String attraction) {
         double latitude, longitude;
+        boolean geocoder_success = true;
+        String[] route_details = dbhandler.getRouteDetails(attraction, "");
+        if (route_details[0] == null) {
+            geocoder_success = updateLatLngDatabaseWithAPI(attraction);
+        } else {
+            latitude = Double.parseDouble(route_details[6]);
+            longitude = Double.parseDouble(route_details[7]);
+            latlng_database.put(indexOf(attraction), new LatLng(latitude, longitude));
+        }
+        return geocoder_success;
+    }
+
+    private boolean updateLatLngDatabaseWithAPI(String attraction) {
+        double latitude, longitude;
         boolean geocoder_success = false;
         Geocoder geocoder = new Geocoder(context);
         List<Address> matched_list = null;
@@ -176,7 +181,9 @@ public class AttractionDatabase implements RoutingListener {
             matched_list = geocoder.getFromLocationName(attraction, 1);
             latitude = matched_list.get(0).getLatitude();
             longitude = matched_list.get(0).getLongitude();
-            latlng_database.put(indexOf(attraction), new LatLng(latitude, longitude));
+            LatLng attraction_latlng = new LatLng(latitude, longitude);
+            latlng_database.put(indexOf(attraction), attraction_latlng);
+            putLatLngInSQL(attraction, attraction_latlng);
             geocoder_success = true;
         }
         catch (Exception e) {
@@ -192,31 +199,15 @@ public class AttractionDatabase implements RoutingListener {
         return geocoder_success;
     }
 
-    private void updateCostDatabaseWithAPI(String attraction) {
-        for (int i = 0; i != name_database.size(); ++i) {
-            if (!attraction.equals(nameOf(i))) {
-//                Log.i("i", "In updateCostDatabase");
-                for (TransportMode mode : TransportMode.values()) {
-                    NodePairInfo info = new NodePairInfo(attraction, nameOf(i), mode);
-                    NodePairInfo reverse_info = new NodePairInfo(nameOf(i), attraction, mode);
-                    places_to_be_routed.add(info);
-                    places_to_be_routed.add(reverse_info);
-//                    Log.i("i", String.format("NodePairInfo(%s, %s, %s) added to places_to_be_routed",
-//                            info.getSource(), info.getDestination(), info.getTransportMode()));
-//                    Log.i("i", String.format("NodePairInfo(%s, %s, %s) added to places_to_be_routed",
-//                            reverse_info.getSource(), reverse_info.getDestination(), reverse_info.getTransportMode()));
-                }
-            }
-        }
-        getNextRoute();
+    private void putLatLngInSQL(String attraction, LatLng attraction_latlng) {
+        DBRoute dbroute = new DBRoute(attraction, "", "", "", 0, 0, 0, attraction_latlng.latitude, attraction_latlng.longitude, "");
+        dbhandler.addLocations(dbroute);
     }
 
     private void updateCostDatabaseWithAPI(String attraction1, String attraction2) {
         for (TransportMode mode : TransportMode.values()) {
             NodePairInfo info = new NodePairInfo(attraction1, attraction2, mode);
-            NodePairInfo reverse_info = new NodePairInfo(attraction2, attraction1, mode);
             places_to_be_routed.add(info);
-            places_to_be_routed.add(reverse_info);
         }
     }
 
