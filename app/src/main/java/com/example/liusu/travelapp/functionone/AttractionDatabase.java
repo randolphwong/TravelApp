@@ -92,65 +92,61 @@ public class AttractionDatabase implements RoutingListener {
                 updated = false;
                 String[] route_details = dbhandler.getRouteDetails(nameOf(0), attraction);
                 if (route_details[0] == null) {
+                    Log.i("i", "Downloading using Google API.");
                     updateCostDatabase(attraction);
                 } else {
                     syncWithSQL(attraction);
+                    Log.i("i", "Getting information from SQL database.");
                 }
             }
             Toast.makeText(context, "Adding " + attraction + " to database.", Toast.LENGTH_LONG).show();
         }
     }
 
-    public void syncWithSQL(String latest_attraction) {
-        // returns detail of the route in String[] format, 0-columnid, 1-longcoord, 2-latcoord, 3-walktime, 4-bustime, 5-taxitime, 6-buscost, 7-taxicost, 8-description
+    private void syncWithSQL(String latest_attraction) {
         for (int i = 0; i != size() - 1; ++i) {
-            String[] route_details = dbhandler.getRouteDetails(nameOf(i), latest_attraction);
-            Log.i("i", "columnid = " + route_details[0]);
+            String previous_attraction = nameOf(i);
+            syncWithSQL(previous_attraction, latest_attraction);
+            syncWithSQL(latest_attraction, previous_attraction);
+        }
+        updated = true;
+    }
+
+    private void syncWithSQL(String attraction1, String attraction2) {
+        // returns detail of the route in String[] format, 0-columnid, 1-longcoord, 2-latcoord, 3-walktime, 4-bustime, 5-taxitime, 6-buscost, 7-taxicost, 8-description
+            String[] route_details = dbhandler.getRouteDetails(attraction1, attraction2);
+            Log.i("i", String.format("Syncing with SQl for %s to %s", attraction1, attraction2));
+            //Log.i("i", "columnid = " + route_details[0]);
             //Log.i("i", "lat array = " + route_details[1]);
             //Log.i("i", "lng array = " + route_details[2]);
-            Log.i("i", "walk time = " + route_details[3]);
-            Log.i("i", "bus time = " + route_details[4]);
-            Log.i("i", "taxi time = " + route_details[5]);
-            Log.i("i", "bus distance = " + route_details[6]);
-            Log.i("i", "taxi distance = " + route_details[7]);
+            //Log.i("i", "walk time = " + route_details[3]);
+            //Log.i("i", "bus time = " + route_details[4]);
+            //Log.i("i", "taxi time = " + route_details[5]);
+            //Log.i("i", "bus distance = " + route_details[6]);
+            //Log.i("i", "taxi distance = " + route_details[7]);
             RouteInfo foot_route_info = new RouteInfo(TransportMode.FOOT);
             RouteInfo bus_route_info = new RouteInfo(TransportMode.BUS);
             RouteInfo taxi_route_info = new RouteInfo(TransportMode.TAXI);
-            foot_route_info.setLatLng(LatLngParser.stringToLatLng(new String[]{route_details[1], route_details[2]}));
+            String[] latlng_string = new String[]{route_details[1], route_details[2]};
+            //Log.i("i", "lat string:\n" + latlng_string[0]);
+            //Log.i("i", "lng string:\n" + latlng_string[1]);
+            ArrayList<LatLng> latlng_array = LatLngParser.stringToLatLng(new String[]{route_details[1], route_details[2]});
+            //Log.i("i", "size of latlng array = " + latlng_array.size());
+            //Log.i("i", "first latlng of latlng array = " + latlng_array.get(0));
+            //Log.i("i", "last latlng of latlng array = " + latlng_array.get(latlng_array.size() - 1));
+            foot_route_info.setLatLng(latlng_array);
             foot_route_info.setDuration(Integer.valueOf(route_details[3]));
             foot_route_info.setDistance(0);
-            bus_route_info.setLatLng(LatLngParser.stringToLatLng(new String[]{route_details[1], route_details[2]}));
+            bus_route_info.setLatLng(latlng_array);
             bus_route_info.setDuration(Integer.valueOf(route_details[4]));
             bus_route_info.setDistance(6);
-            taxi_route_info.setLatLng(LatLngParser.stringToLatLng(new String[]{route_details[1], route_details[2]}));
+            taxi_route_info.setLatLng(latlng_array);
             taxi_route_info.setDuration(Integer.valueOf(route_details[5]));
             taxi_route_info.setDistance(7);
 
-            cost_database.add(i, size() - 1, foot_route_info);
-            cost_database.add(i, size() - 1, bus_route_info);
-            cost_database.add(i, size() - 1, taxi_route_info);
-
-            //for (TransportMode mode : TransportMode.values())
-                //Log.i("i", "cost between: " + cost_database.timeBetween(i, size() - 1, mode));
-            String[] route_details_rev = dbhandler.getRouteDetails(latest_attraction, nameOf(i));
-            RouteInfo foot_route_info_rev = new RouteInfo(TransportMode.FOOT);
-            RouteInfo bus_route_info_rev = new RouteInfo(TransportMode.BUS);
-            RouteInfo taxi_route_info_rev = new RouteInfo(TransportMode.TAXI);
-            foot_route_info_rev.setLatLng(LatLngParser.stringToLatLng(new String[]{route_details_rev[1], route_details_rev[2]}));
-            foot_route_info_rev.setDuration(Integer.valueOf(route_details_rev[3]));
-            foot_route_info_rev.setDistance(0);
-            bus_route_info_rev.setLatLng(LatLngParser.stringToLatLng(new String[]{route_details_rev[1], route_details_rev[2]}));
-            bus_route_info_rev.setDuration(Integer.valueOf(route_details_rev[4]));
-            bus_route_info_rev.setDistance(6);
-            taxi_route_info_rev.setLatLng(LatLngParser.stringToLatLng(new String[]{route_details_rev[1], route_details_rev[2]}));
-            taxi_route_info_rev.setDuration(Integer.valueOf(route_details_rev[5]));
-            taxi_route_info_rev.setDistance(7);
-
-            cost_database.add(size() - 1, i, foot_route_info_rev);
-            cost_database.add(size() - 1, i, bus_route_info_rev);
-            cost_database.add(size() - 1, i, taxi_route_info_rev);
-        }
-        updated = true;
+            cost_database.add(indexOf(attraction1), indexOf(attraction2), foot_route_info);
+            cost_database.add(indexOf(attraction1), indexOf(attraction2), bus_route_info);
+            cost_database.add(indexOf(attraction1), indexOf(attraction2), taxi_route_info);
     }
     
     private void updateLatLngDatabase(String attraction) {
@@ -243,34 +239,28 @@ public class AttractionDatabase implements RoutingListener {
 
     private void updateSQLDatabase() {
         if (size() > 1) {
-            String new_attraction = nameOf(size() - 1);
+            String latest_attraction = nameOf(size() - 1);
             for (int i = 0; i != size() - 1; ++i) {
-                String old_attraction = nameOf(i);
-                //Log.i("i", "lat: " + latlng_string[0]);
-                //Log.i("i", "lng: " + latlng_string[1]);
-                String[] latlng_string = LatLngParser.latLngToString(
-                        routeInfoBetween(old_attraction, new_attraction, TransportMode.toString(TransportMode.TAXI)).getPoints());
-                DBRoute dbroute = new DBRoute(old_attraction, new_attraction, latlng_string[0], latlng_string[1], 
-                        timeBetween(i, size() - 1, TransportMode.FOOT),
-                        timeBetween(i, size() - 1, TransportMode.BUS),
-                        timeBetween(i, size() - 1, TransportMode.TAXI),
-                        routeInfoBetween(old_attraction, new_attraction, TransportMode.toString(TransportMode.BUS)).getDistance(),
-                        routeInfoBetween(old_attraction, new_attraction, TransportMode.toString(TransportMode.TAXI)).getDistance(),
-                        "no desc");
-                dbhandler.addLocations(dbroute);
-
-                String[] latlng_string_rev = LatLngParser.latLngToString(
-                        routeInfoBetween(new_attraction, old_attraction, TransportMode.toString(TransportMode.TAXI)).getPoints());
-                DBRoute dbroute_rev = new DBRoute(new_attraction, old_attraction, latlng_string_rev[0], latlng_string_rev[1], 
-                        timeBetween(size() - 1, i, TransportMode.FOOT),
-                        timeBetween(size() - 1, i, TransportMode.BUS),
-                        timeBetween(size() - 1, i, TransportMode.TAXI),
-                        routeInfoBetween(new_attraction, old_attraction, TransportMode.toString(TransportMode.BUS)).getDistance(),
-                        routeInfoBetween(new_attraction, old_attraction, TransportMode.toString(TransportMode.TAXI)).getDistance(),
-                        "no desc");
-                dbhandler.addLocations(dbroute_rev);
+                String previous_attraction = nameOf(i);
+                updateSQLDatabase(previous_attraction, latest_attraction);
+                updateSQLDatabase(latest_attraction, previous_attraction);
             }
         }
+    }
+
+    private void updateSQLDatabase(String attraction1, String attraction2) {
+        String[] latlng_string = LatLngParser.latLngToString(
+                //Log.i("i", "lat: " + latlng_string[0]);
+                //Log.i("i", "lng: " + latlng_string[1]);
+                routeInfoBetween(attraction1, attraction2, TransportMode.toString(TransportMode.TAXI)).getPoints());
+        DBRoute dbroute = new DBRoute(attraction1, attraction2, latlng_string[0], latlng_string[1], 
+                timeBetween(indexOf(attraction1), indexOf(attraction2), TransportMode.FOOT),
+                timeBetween(indexOf(attraction1), indexOf(attraction2), TransportMode.BUS),
+                timeBetween(indexOf(attraction1), indexOf(attraction2), TransportMode.TAXI),
+                routeInfoBetween(attraction1, attraction2, TransportMode.toString(TransportMode.BUS)).getDistance(),
+                routeInfoBetween(attraction1, attraction2, TransportMode.toString(TransportMode.TAXI)).getDistance(),
+                "no desc");
+        dbhandler.addLocations(dbroute);
     }
 
     @Override
