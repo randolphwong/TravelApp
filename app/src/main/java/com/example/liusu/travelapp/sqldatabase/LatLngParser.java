@@ -37,7 +37,7 @@ public class LatLngParser {
         ArrayList<Double> lat_array = LatLngParser.stringToDoubleArray(latlng_string[0]);
         ArrayList<Double> lng_array = LatLngParser.stringToDoubleArray(latlng_string[1]);
 
-        for (int i = 0; i != latlng_string.length; ++i)
+        for (int i = 0; i != lat_array.size(); ++i)
             latlng_array.add(new LatLng(lat_array.get(i), lng_array.get(i)));
         return latlng_array;
     }
