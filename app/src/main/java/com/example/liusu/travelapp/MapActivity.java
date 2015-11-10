@@ -196,7 +196,10 @@ public class MapActivity extends AppCompatActivity {
                     polyOptions.color(Color.MAGENTA);
                     break;
             }
-            polyOptions.width(10);
+            if (i != 0)
+                polyOptions.width(8);
+            else
+                polyOptions.width(15);
 
             if (plot_straight_route)
                 polyOptions.addAll(route_info.getEndPoints());
