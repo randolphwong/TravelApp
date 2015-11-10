@@ -87,20 +87,35 @@ public class AttractionDatabase implements RoutingListener {
 
             // to address problem of failed update
             // check if location already in database
-            updateLatLngDatabase(attraction);
-            if (size() > 1) {
+            
+            if (updateLatLngDatabase(attraction) && size() > 1) {
+                Log.i("i", "Adding " + attraction);
                 updated = false;
-                String[] route_details = dbhandler.getRouteDetails(nameOf(0), attraction);
-                if (route_details[0] == null) {
-                    Log.i("i", "Downloading using Google API.");
-                    updateCostDatabase(attraction);
-                } else {
-                    syncWithSQL(attraction);
-                    Log.i("i", "Getting information from SQL database.");
-                }
+                updateCostDatabase(attraction);
             }
-            Toast.makeText(context, "Adding " + attraction + " to database.", Toast.LENGTH_LONG).show();
+            //Toast.makeText(context, "Adding " + attraction + " to database.", Toast.LENGTH_LONG).show();
         }
+    }
+
+    private void updateCostDatabase(String latest_attraction) {
+        boolean to_download = false;
+        for (int i = 0; i != size() - 1; ++i) {
+            String previous_attraction = nameOf(i);
+            String[] route_details = dbhandler.getRouteDetails(previous_attraction, latest_attraction);
+            if (route_details[0] == null) {
+                Log.i("i", "Downloading using Google API.");
+                updateCostDatabaseWithAPI(previous_attraction, latest_attraction);
+                updateCostDatabaseWithAPI(latest_attraction, previous_attraction);
+                to_download = true;
+            } else {
+                Log.i("i", "Getting information from SQL database.");
+                syncWithSQL(previous_attraction, latest_attraction);
+                syncWithSQL(latest_attraction, previous_attraction);
+                updated = true;
+            }
+        }
+        if (to_download)
+            getNextRoute();
     }
 
     private void syncWithSQL(String latest_attraction) {
@@ -115,7 +130,7 @@ public class AttractionDatabase implements RoutingListener {
     private void syncWithSQL(String attraction1, String attraction2) {
         // returns detail of the route in String[] format, 0-columnid, 1-longcoord, 2-latcoord, 3-walktime, 4-bustime, 5-taxitime, 6-buscost, 7-taxicost, 8-description
             String[] route_details = dbhandler.getRouteDetails(attraction1, attraction2);
-            Log.i("i", String.format("Syncing with SQl for %s to %s", attraction1, attraction2));
+            //Log.i("i", String.format("Syncing with SQl for %s to %s", attraction1, attraction2));
             //Log.i("i", "columnid = " + route_details[0]);
             //Log.i("i", "lat array = " + route_details[1]);
             //Log.i("i", "lng array = " + route_details[2]);
@@ -149,31 +164,32 @@ public class AttractionDatabase implements RoutingListener {
             cost_database.add(indexOf(attraction1), indexOf(attraction2), taxi_route_info);
     }
     
-    private void updateLatLngDatabase(String attraction) {
+    private boolean updateLatLngDatabase(String attraction) {
+        double latitude, longitude;
+        boolean geocoder_success = false;
         Geocoder geocoder = new Geocoder(context);
         List<Address> matched_list = null;
         try {
             matched_list = geocoder.getFromLocationName(attraction, 1);
-        }
-        catch (IOException e) {
-            Log.e("e", e.getMessage());
-        }
-
-        double latitude, longitude;
-        try {
             latitude = matched_list.get(0).getLatitude();
             longitude = matched_list.get(0).getLongitude();
             latlng_database.put(indexOf(attraction), new LatLng(latitude, longitude));
+            geocoder_success = true;
         }
         catch (Exception e) {
             if (e.getMessage() != null)
                 Log.e("e", e.getMessage());
             else
                 Log.e("e", "No message?");
+            // remove attraction from database
+            if (name_database.remove(attraction)) {
+                Toast.makeText(context, "LatLng information cannot be obtained for: " + attraction + ".", Toast.LENGTH_LONG).show();
+            }
         }
+        return geocoder_success;
     }
 
-    private void updateCostDatabase(String attraction) {
+    private void updateCostDatabaseWithAPI(String attraction) {
         for (int i = 0; i != name_database.size(); ++i) {
             if (!attraction.equals(nameOf(i))) {
 //                Log.i("i", "In updateCostDatabase");
@@ -190,6 +206,15 @@ public class AttractionDatabase implements RoutingListener {
             }
         }
         getNextRoute();
+    }
+
+    private void updateCostDatabaseWithAPI(String attraction1, String attraction2) {
+        for (TransportMode mode : TransportMode.values()) {
+            NodePairInfo info = new NodePairInfo(attraction1, attraction2, mode);
+            NodePairInfo reverse_info = new NodePairInfo(attraction2, attraction1, mode);
+            places_to_be_routed.add(info);
+            places_to_be_routed.add(reverse_info);
+        }
     }
 
     private void getNextRoute() {
