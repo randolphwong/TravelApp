@@ -112,11 +112,12 @@ public class AttractionDatabase implements RoutingListener {
                 Log.i("i", "Getting information from SQL database.");
                 syncWithSQL(previous_attraction, latest_attraction);
                 syncWithSQL(latest_attraction, previous_attraction);
-                updated = true;
             }
         }
         if (to_download)
             getNextRoute();
+        else
+            updated = true;
     }
 
     private void syncWithSQL(String latest_attraction) {
