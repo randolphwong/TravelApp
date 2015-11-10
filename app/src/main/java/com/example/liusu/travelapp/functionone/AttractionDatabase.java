@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.HashMap;
+import java.util.EnumMap;
 
 import java.io.IOException;
 
@@ -129,39 +130,40 @@ public class AttractionDatabase implements RoutingListener {
 
     private void syncWithSQL(String attraction1, String attraction2) {
         // returns detail of the route in String[] format, 0-columnid, 1-longcoord, 2-latcoord, 3-walktime, 4-bustime, 5-taxitime, 6-buscost, 7-taxicost, 8-description
-            String[] route_details = dbhandler.getRouteDetails(attraction1, attraction2);
-            //Log.i("i", String.format("Syncing with SQl for %s to %s", attraction1, attraction2));
-            //Log.i("i", "columnid = " + route_details[0]);
-            //Log.i("i", "lat array = " + route_details[1]);
-            //Log.i("i", "lng array = " + route_details[2]);
-            //Log.i("i", "walk time = " + route_details[3]);
-            //Log.i("i", "bus time = " + route_details[4]);
-            //Log.i("i", "taxi time = " + route_details[5]);
-            //Log.i("i", "bus distance = " + route_details[6]);
-            //Log.i("i", "taxi distance = " + route_details[7]);
-            RouteInfo foot_route_info = new RouteInfo(TransportMode.FOOT);
-            RouteInfo bus_route_info = new RouteInfo(TransportMode.BUS);
-            RouteInfo taxi_route_info = new RouteInfo(TransportMode.TAXI);
-            String[] latlng_string = new String[]{route_details[1], route_details[2]};
-            //Log.i("i", "lat string:\n" + latlng_string[0]);
-            //Log.i("i", "lng string:\n" + latlng_string[1]);
-            ArrayList<LatLng> latlng_array = LatLngParser.stringToLatLng(new String[]{route_details[1], route_details[2]});
-            //Log.i("i", "size of latlng array = " + latlng_array.size());
-            //Log.i("i", "first latlng of latlng array = " + latlng_array.get(0));
-            //Log.i("i", "last latlng of latlng array = " + latlng_array.get(latlng_array.size() - 1));
-            foot_route_info.setLatLng(latlng_array);
-            foot_route_info.setDuration(Integer.valueOf(route_details[3]));
-            foot_route_info.setDistance(0);
-            bus_route_info.setLatLng(latlng_array);
-            bus_route_info.setDuration(Integer.valueOf(route_details[4]));
-            bus_route_info.setDistance(6);
-            taxi_route_info.setLatLng(latlng_array);
-            taxi_route_info.setDuration(Integer.valueOf(route_details[5]));
-            taxi_route_info.setDistance(7);
+        //public static EnumMap<TransportMode, ArrayList<LatLng>> stringToLatLngForAllMode(String[] latlng_string) {
+        String[] route_details = dbhandler.getRouteDetails(attraction1, attraction2);
+        //Log.i("i", String.format("Syncing with SQl for %s to %s", attraction1, attraction2));
+        //Log.i("i", "columnid = " + route_details[0]);
+        //Log.i("i", "lat array = " + route_details[1]);
+        //Log.i("i", "lng array = " + route_details[2]);
+        //Log.i("i", "walk time = " + route_details[3]);
+        //Log.i("i", "bus time = " + route_details[4]);
+        //Log.i("i", "taxi time = " + route_details[5]);
+        //Log.i("i", "bus distance = " + route_details[6]);
+        //Log.i("i", "taxi distance = " + route_details[7]);
+        RouteInfo foot_route_info = new RouteInfo(TransportMode.FOOT);
+        RouteInfo bus_route_info = new RouteInfo(TransportMode.BUS);
+        RouteInfo taxi_route_info = new RouteInfo(TransportMode.TAXI);
+        String[] latlng_string = new String[]{route_details[1], route_details[2]};
+        //Log.i("i", "lat string:\n" + latlng_string[0]);
+        //Log.i("i", "lng string:\n" + latlng_string[1]);
+        EnumMap<TransportMode, ArrayList<LatLng>> all_latlngs = LatLngParser.stringToLatLngForAllMode(new String[]{route_details[1], route_details[2]});
+        //Log.i("i", "size of latlng array = " + latlng_array.size());
+        //Log.i("i", "first latlng of latlng array = " + latlng_array.get(0));
+        //Log.i("i", "last latlng of latlng array = " + latlng_array.get(latlng_array.size() - 1));
+        foot_route_info.setLatLng(all_latlngs.get(TransportMode.FOOT));
+        foot_route_info.setDuration(Integer.valueOf(route_details[3]));
+        foot_route_info.setDistance(0);
+        bus_route_info.setLatLng(all_latlngs.get(TransportMode.BUS));
+        bus_route_info.setDuration(Integer.valueOf(route_details[4]));
+        bus_route_info.setDistance(6);
+        taxi_route_info.setLatLng(all_latlngs.get(TransportMode.TAXI));
+        taxi_route_info.setDuration(Integer.valueOf(route_details[5]));
+        taxi_route_info.setDistance(7);
 
-            cost_database.add(indexOf(attraction1), indexOf(attraction2), foot_route_info);
-            cost_database.add(indexOf(attraction1), indexOf(attraction2), bus_route_info);
-            cost_database.add(indexOf(attraction1), indexOf(attraction2), taxi_route_info);
+        cost_database.add(indexOf(attraction1), indexOf(attraction2), foot_route_info);
+        cost_database.add(indexOf(attraction1), indexOf(attraction2), bus_route_info);
+        cost_database.add(indexOf(attraction1), indexOf(attraction2), taxi_route_info);
     }
     
     private boolean updateLatLngDatabase(String attraction) {
@@ -274,10 +276,18 @@ public class AttractionDatabase implements RoutingListener {
     }
 
     private void updateSQLDatabase(String attraction1, String attraction2) {
-        String[] latlng_string = LatLngParser.latLngToString(
-                //Log.i("i", "lat: " + latlng_string[0]);
-                //Log.i("i", "lng: " + latlng_string[1]);
+        //Log.i("i", "lat: " + latlng_string[0]);
+        //Log.i("i", "lng: " + latlng_string[1]);
+        //public static String[] latLngToStringForAllMode(EnumMap<TransportMode, ArrayList<LatLng>> all_latlngs) {
+        EnumMap<TransportMode, ArrayList<LatLng>> all_latlngs = new EnumMap<>(TransportMode.class);
+        all_latlngs.put(TransportMode.FOOT,
+                routeInfoBetween(attraction1, attraction2, TransportMode.toString(TransportMode.FOOT)).getPoints());
+        all_latlngs.put(TransportMode.BUS,
+                routeInfoBetween(attraction1, attraction2, TransportMode.toString(TransportMode.BUS)).getPoints());
+        all_latlngs.put(TransportMode.TAXI,
                 routeInfoBetween(attraction1, attraction2, TransportMode.toString(TransportMode.TAXI)).getPoints());
+
+        String[] latlng_string = LatLngParser.latLngToStringForAllMode(all_latlngs);
         DBRoute dbroute = new DBRoute(attraction1, attraction2, latlng_string[0], latlng_string[1], 
                 timeBetween(indexOf(attraction1), indexOf(attraction2), TransportMode.FOOT),
                 timeBetween(indexOf(attraction1), indexOf(attraction2), TransportMode.BUS),
