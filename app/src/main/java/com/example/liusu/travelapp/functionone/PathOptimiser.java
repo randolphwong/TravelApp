@@ -22,7 +22,17 @@ public class PathOptimiser {
 
         // branch and bound search for optimal transport mode for given path
         IncidentArray[] new_best_path = PathOptimiser.insertEdgeToPath(optimised_path, 0, 0, budget, attraction_database, expected_best_path, best_path);
+
+        //IncidentArray[] new_best_path = PathOptimiser.exhaustiveSearch(home, budget, attraction_database);
         return new_best_path;
+    }
+
+    public static IncidentArray[] createIncidentArrayFromNodeList(ArrayList<Integer> path, TransportMode transport_mode) {
+        IncidentArray[] incident_path = new IncidentArray[path.size() - 1];
+        for (int i = 0; i != incident_path.length; ++i) {
+            incident_path[path.get(i)] = new IncidentArray(path.get(i + 1), transport_mode);
+        }
+        return incident_path;
     }
 
     public static IncidentArray[] createIncidentArrayFromNodeList(LinkedList<Integer> path, TransportMode transport_mode) {
@@ -161,5 +171,59 @@ public class PathOptimiser {
             return PathOptimiser.deepCopyIncidentArray(best_path);
         else
             return null;
+    }
+
+    public static IncidentArray[] exhaustiveSearch(int home, double budget, AttractionDatabase attraction_database) {
+        // create a starting path to permutate
+        ArrayList<Integer> path = new ArrayList<>(attraction_database.size() + 1);
+        path.add(home);
+        for (int i = 0, j = 0; j != attraction_database.size(); ++j) {
+            if (j != home) {
+                path.add(j);
+                ++i;
+            }
+        }
+        path.add(home);
+
+        // get all permutation of path
+        ArrayList<ArrayList<Integer>> path_permutations = Permutation.getPermutations(path, 1, path.size() - 2);
+
+        // for each path, find the best transport mode and keep the best from all path
+        int minimum_travel_time = -1;
+        IncidentArray[] best_route = null;
+
+        for (int i = 0; i != path_permutations.size(); ++i) {
+            IncidentArray[] expected_best_path = PathOptimiser.createIncidentArrayFromNodeList(path_permutations.get(i), TransportMode.TAXI);
+            IncidentArray[] best_path = PathOptimiser.createIncidentArrayFromNodeList(path_permutations.get(i), TransportMode.FOOT);
+            IncidentArray[] local_best_route = getBestTransportModeForPath(path_permutations.get(i), 0, 0, budget, attraction_database, expected_best_path, best_path);
+            //IncidentArray[] local_best_route = null;
+            int local_best_time = attraction_database.travelTimeOf(local_best_route);
+            if (local_best_time < minimum_travel_time || minimum_travel_time < 0) {
+                minimum_travel_time = local_best_time;
+                best_route = local_best_route;
+            }
+        }
+        return best_route;
+    }
+
+    public static IncidentArray[] getBestTransportModeForPath(ArrayList<Integer> path, int path_index, double accumulated_cost, double budget, AttractionDatabase attraction_data, IncidentArray[] expected_best_path, IncidentArray[] best_path) {
+        if (path_index == path.size() - 1) {
+            if (accumulated_cost <= budget) {
+                if (attraction_data.travelTimeOf(expected_best_path) < attraction_data.travelTimeOf(best_path))
+                    return PathOptimiser.deepCopyIncidentArray(expected_best_path);
+            }
+            return null;
+        }
+
+        for (TransportMode transport_mode : TransportMode.values()) {
+            double new_accumulated_cost = accumulated_cost + attraction_data.costBetween(path.get(path_index), path.get(path_index + 1), transport_mode);
+            IncidentArray[] new_expected_best_path = PathOptimiser.deepCopyIncidentArray(expected_best_path);
+            new_expected_best_path[path.get(path_index)].setTransportMode(transport_mode);
+
+            IncidentArray[] better_path = getBestTransportModeForPath(path, path_index + 1, new_accumulated_cost, budget, attraction_data, new_expected_best_path, best_path);
+            if (better_path != null)
+                best_path = PathOptimiser.deepCopyIncidentArray(better_path);
+        }
+        return PathOptimiser.deepCopyIncidentArray(best_path);
     }
 }

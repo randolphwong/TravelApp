@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.HashMap;
+import java.util.EnumMap;
 
 import java.io.IOException;
 
@@ -16,6 +17,7 @@ import android.content.Context;
 
 import com.example.liusu.travelapp.sqldatabase.DBRoute;
 import com.example.liusu.travelapp.sqldatabase.MyDBHandler;
+import com.example.liusu.travelapp.sqldatabase.LatLngParser;
 
 import com.directions.route.AbstractRouting;
 import com.directions.route.Route;
@@ -85,56 +87,132 @@ public class AttractionDatabase implements RoutingListener {
             name_database.add(attraction);
 
             // to address problem of failed update
-            updateLatLngDatabase(attraction);
-            if (size() > 1) {
-                updateCostDatabase(attraction);
+            // check if location already in database
+            
+            if (updateLatLngDatabase(attraction) && size() > 1) {
+                Log.i("i", "Adding " + attraction);
                 updated = false;
+                long start_update = System.nanoTime();
+                updateCostDatabase(attraction);
+                long end_update = System.nanoTime();
+                long update_time = end_update - start_update;
+                Log.i("Performance test", "Sync/Download took: " + ((double) update_time / 1000000) + "ms.");
             }
-            Toast.makeText(context, "Adding " + attraction + " to database.", Toast.LENGTH_LONG).show();
+            //Toast.makeText(context, "Adding " + attraction + " to database.", Toast.LENGTH_LONG).show();
         }
     }
+
+    private void updateCostDatabase(String latest_attraction) {
+        boolean to_download = false;
+        for (int i = 0; i != size() - 1; ++i) {
+            String previous_attraction = nameOf(i);
+            String[] route_details = dbhandler.getRouteDetails(previous_attraction, latest_attraction);
+            if (route_details[0] == null) {
+                Log.i("i", "Downloading using Google API.");
+                updateCostDatabaseWithAPI(previous_attraction, latest_attraction);
+                updateCostDatabaseWithAPI(latest_attraction, previous_attraction);
+                to_download = true;
+            } else {
+                Log.i("i", "Getting information from SQL database.");
+                syncWithSQL(previous_attraction, latest_attraction);
+                syncWithSQL(latest_attraction, previous_attraction);
+            }
+        }
+        if (to_download)
+            getNextRoute();
+        else
+            updated = true;
+    }
+
+    private void syncWithSQL(String attraction1, String attraction2) {
+        // returns detail of the route in String[] format, 0-columnid, 1-longcoord, 2-latcoord, 3-walktime, 4-bustime, 5-taxitime, 6-buscost, 7-taxicost, 8-description
+        //public static EnumMap<TransportMode, ArrayList<LatLng>> stringToLatLngForAllMode(String[] latlng_string) {
+        String[] route_details = dbhandler.getRouteDetails(attraction1, attraction2);
+        //Log.i("i", String.format("Syncing with SQl for %s to %s", attraction1, attraction2));
+        //Log.i("i", "columnid = " + route_details[0]);
+        //Log.i("i", "lat array = " + route_details[1]);
+        //Log.i("i", "lng array = " + route_details[2]);
+        //Log.i("i", "walk time = " + route_details[3]);
+        //Log.i("i", "bus time = " + route_details[4]);
+        //Log.i("i", "taxi time = " + route_details[5]);
+        //Log.i("i", "bus distance = " + route_details[6]);
+        //Log.i("i", "taxi distance = " + route_details[7]);
+        RouteInfo foot_route_info = new RouteInfo(TransportMode.FOOT);
+        RouteInfo bus_route_info = new RouteInfo(TransportMode.BUS);
+        RouteInfo taxi_route_info = new RouteInfo(TransportMode.TAXI);
+        String[] latlng_string = new String[]{route_details[1], route_details[2]};
+        //Log.i("i", "lat string:\n" + latlng_string[0]);
+        //Log.i("i", "lng string:\n" + latlng_string[1]);
+        EnumMap<TransportMode, ArrayList<LatLng>> all_latlngs = LatLngParser.stringToLatLngForAllMode(new String[]{route_details[1], route_details[2]});
+        //Log.i("i", "size of latlng array = " + latlng_array.size());
+        //Log.i("i", "first latlng of latlng array = " + latlng_array.get(0));
+        //Log.i("i", "last latlng of latlng array = " + latlng_array.get(latlng_array.size() - 1));
+        foot_route_info.setLatLng(all_latlngs.get(TransportMode.FOOT));
+        foot_route_info.setDuration(Integer.parseInt(route_details[3]));
+        foot_route_info.setDistance(0);
+        bus_route_info.setLatLng(all_latlngs.get(TransportMode.BUS));
+        bus_route_info.setDuration(Integer.parseInt(route_details[4]));
+        bus_route_info.setDistance(Double.parseDouble(route_details[6]));
+        taxi_route_info.setLatLng(all_latlngs.get(TransportMode.TAXI));
+        taxi_route_info.setDuration(Integer.parseInt(route_details[5]));
+        taxi_route_info.setDistance(Double.parseDouble(route_details[7]));
+
+        cost_database.add(indexOf(attraction1), indexOf(attraction2), foot_route_info);
+        cost_database.add(indexOf(attraction1), indexOf(attraction2), bus_route_info);
+        cost_database.add(indexOf(attraction1), indexOf(attraction2), taxi_route_info);
+    }
     
-    private void updateLatLngDatabase(String attraction) {
+    private boolean updateLatLngDatabase(String attraction) {
+        double latitude, longitude;
+        boolean geocoder_success = true;
+        String[] route_details = dbhandler.getRouteDetails(attraction, "");
+        if (route_details[0] == null) {
+            geocoder_success = updateLatLngDatabaseWithAPI(attraction);
+        } else {
+            latitude = Double.parseDouble(route_details[6]);
+            longitude = Double.parseDouble(route_details[7]);
+            latlng_database.put(indexOf(attraction), new LatLng(latitude, longitude));
+        }
+        return geocoder_success;
+    }
+
+    private boolean updateLatLngDatabaseWithAPI(String attraction) {
+        double latitude, longitude;
+        boolean geocoder_success = false;
         Geocoder geocoder = new Geocoder(context);
         List<Address> matched_list = null;
         try {
             matched_list = geocoder.getFromLocationName(attraction, 1);
-        }
-        catch (IOException e) {
-            Log.e("e", e.getMessage());
-        }
-
-        double latitude, longitude;
-        try {
             latitude = matched_list.get(0).getLatitude();
             longitude = matched_list.get(0).getLongitude();
-            latlng_database.put(indexOf(attraction), new LatLng(latitude, longitude));
+            LatLng attraction_latlng = new LatLng(latitude, longitude);
+            latlng_database.put(indexOf(attraction), attraction_latlng);
+            putLatLngInSQL(attraction, attraction_latlng);
+            geocoder_success = true;
         }
         catch (Exception e) {
             if (e.getMessage() != null)
                 Log.e("e", e.getMessage());
             else
                 Log.e("e", "No message?");
-        }
-    }
-
-    private void updateCostDatabase(String attraction) {
-        for (int i = 0; i != name_database.size(); ++i) {
-            if (!attraction.equals(nameOf(i))) {
-//                Log.i("i", "In updateCostDatabase");
-                for (TransportMode mode : TransportMode.values()) {
-                    NodePairInfo info = new NodePairInfo(attraction, nameOf(i), mode);
-                    NodePairInfo reverse_info = new NodePairInfo(nameOf(i), attraction, mode);
-                    places_to_be_routed.add(info);
-                    places_to_be_routed.add(reverse_info);
-//                    Log.i("i", String.format("NodePairInfo(%s, %s, %s) added to places_to_be_routed",
-//                            info.getSource(), info.getDestination(), info.getTransportMode()));
-//                    Log.i("i", String.format("NodePairInfo(%s, %s, %s) added to places_to_be_routed",
-//                            reverse_info.getSource(), reverse_info.getDestination(), reverse_info.getTransportMode()));
-                }
+            // remove attraction from database
+            if (name_database.remove(attraction)) {
+                Toast.makeText(context, "LatLng information cannot be obtained for: " + attraction + ".", Toast.LENGTH_LONG).show();
             }
         }
-        getNextRoute();
+        return geocoder_success;
+    }
+
+    private void putLatLngInSQL(String attraction, LatLng attraction_latlng) {
+        DBRoute dbroute = new DBRoute(attraction, "", "", "", 0, 0, 0, attraction_latlng.latitude, attraction_latlng.longitude, "");
+        dbhandler.addLocations(dbroute);
+    }
+
+    private void updateCostDatabaseWithAPI(String attraction1, String attraction2) {
+        for (TransportMode mode : TransportMode.values()) {
+            NodePairInfo info = new NodePairInfo(attraction1, attraction2, mode);
+            places_to_be_routed.add(info);
+        }
     }
 
     private void getNextRoute() {
@@ -168,9 +246,12 @@ public class AttractionDatabase implements RoutingListener {
             Integer destination = indexOf(info.getDestination());
             RouteInfo route_info = info.getRouteInfo();
             // add in latlng infomations
-            route_info.addLatLng(latlng_database.get(source));
-            route_info.addLatLng(latlng_database.get(destination));
+            route_info.addEndLatLng(latlng_database.get(source));
+            route_info.addEndLatLng(latlng_database.get(destination));
             cost_database.add(source, destination, route_info);
+            //Log.i("i", "end points: " + route_info.getEndPoints());
+            //Log.i("i", "first index of all points: " + route_info.getPoints().get(0));
+            //Log.i("i", "last index of all points: " + route_info.getPoints().get(route_info.getPoints().size() - 1));
 //            Log.i("i", String.format("cost_database.add(%d, %d, %s)", source, destination, route_info.getTransportMode()));
         }
         places_to_be_updated.clear();
@@ -181,17 +262,36 @@ public class AttractionDatabase implements RoutingListener {
 
     private void updateSQLDatabase() {
         if (size() > 1) {
-            String new_attraction = nameOf(size() - 1);
-            for (int i = 0; i != size(); ++i) {
-                String old_attraction = nameOf(i);
-                DBRoute dbroute = new DBRoute(old_attraction, new_attraction, "x coord", "y coord", timeBetween(i, size() - 1, TransportMode.FOOT),
-                        timeBetween(i, size() - 1, TransportMode.BUS),
-                        timeBetween(i, size() - 1, TransportMode.TAXI),
-                        costBetween(i, size() - 1, TransportMode.BUS),
-                        costBetween(i, size() - 1, TransportMode.TAXI), "no desc");
-                dbhandler.addLocations(dbroute);
+            String latest_attraction = nameOf(size() - 1);
+            for (int i = 0; i != size() - 1; ++i) {
+                String previous_attraction = nameOf(i);
+                updateSQLDatabase(previous_attraction, latest_attraction);
+                updateSQLDatabase(latest_attraction, previous_attraction);
             }
         }
+    }
+
+    private void updateSQLDatabase(String attraction1, String attraction2) {
+        //Log.i("i", "lat: " + latlng_string[0]);
+        //Log.i("i", "lng: " + latlng_string[1]);
+        //public static String[] latLngToStringForAllMode(EnumMap<TransportMode, ArrayList<LatLng>> all_latlngs) {
+        EnumMap<TransportMode, ArrayList<LatLng>> all_latlngs = new EnumMap<>(TransportMode.class);
+        all_latlngs.put(TransportMode.FOOT,
+                routeInfoBetween(attraction1, attraction2, TransportMode.toString(TransportMode.FOOT)).getPoints());
+        all_latlngs.put(TransportMode.BUS,
+                routeInfoBetween(attraction1, attraction2, TransportMode.toString(TransportMode.BUS)).getPoints());
+        all_latlngs.put(TransportMode.TAXI,
+                routeInfoBetween(attraction1, attraction2, TransportMode.toString(TransportMode.TAXI)).getPoints());
+
+        String[] latlng_string = LatLngParser.latLngToStringForAllMode(all_latlngs);
+        DBRoute dbroute = new DBRoute(attraction1, attraction2, latlng_string[0], latlng_string[1], 
+                timeBetween(indexOf(attraction1), indexOf(attraction2), TransportMode.FOOT),
+                timeBetween(indexOf(attraction1), indexOf(attraction2), TransportMode.BUS),
+                timeBetween(indexOf(attraction1), indexOf(attraction2), TransportMode.TAXI),
+                routeInfoBetween(attraction1, attraction2, TransportMode.toString(TransportMode.BUS)).getDistance(),
+                routeInfoBetween(attraction1, attraction2, TransportMode.toString(TransportMode.TAXI)).getDistance(),
+                "no desc");
+        dbhandler.addLocations(dbroute);
     }
 
     @Override

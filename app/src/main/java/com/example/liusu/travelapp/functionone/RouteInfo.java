@@ -6,29 +6,45 @@ import com.google.android.gms.maps.model.LatLng;
 import java.util.ArrayList;
 
 public class RouteInfo {
-    private Route route;
     private TransportMode transport_mode;
-    private ArrayList<LatLng> latlngs;
+    private ArrayList<LatLng> end_latlngs;
+    private ArrayList<LatLng> all_latlngs;
+    private double distance;
+    private int duration;
 
     public RouteInfo() {
-        latlngs = new ArrayList<>();
+        end_latlngs = new ArrayList<>();
+        all_latlngs = new ArrayList<>();
     }
 
-    public RouteInfo(Route route, TransportMode transport_mode) {
-        this.route = route;
+    public RouteInfo(TransportMode transport_mode) {
+        this();
         this.transport_mode = transport_mode;
     }
 
     public void setRoute(Route route) {
-        this.route = route;
+        distance = (double) route.getDistanceValue() / 1000;
+        duration = route.getDurationValue() / 60;
+        all_latlngs = (ArrayList<LatLng>) route.getPoints();
     }
 
     public void setTransportMode(TransportMode transport_mode) {
         this.transport_mode = transport_mode;
     }
 
-    public Route getRoute() {
-        return route;
+    public void setDistance(double distance) {
+        this.distance = distance;
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
+
+    public void setLatLng(ArrayList<LatLng> latlngs) {
+        all_latlngs = latlngs;
+
+        end_latlngs.add(all_latlngs.get(0));
+        end_latlngs.add(all_latlngs.get(all_latlngs.size() - 1));
     }
 
     public TransportMode getTransportMode() {
@@ -36,12 +52,15 @@ public class RouteInfo {
     }
 
     public int getDuration() {
-        return route.getDurationValue() / 60;
+        return duration;
+    }
+
+    public double getDistance() {
+        return distance;
     }
 
     public double getCost() {
         double cost = 0;
-        double distance = (double) route.getDistanceValue() / 1000;
         switch (transport_mode) {
             case TAXI:
                 cost = 3 + 0.66 * distance;
@@ -56,11 +75,15 @@ public class RouteInfo {
         return cost;
     }
 
-    public void addLatLng(LatLng latlng) {
-        latlngs.add(latlng);
+    public void addEndLatLng(LatLng latlng) {
+        end_latlngs.add(latlng);
     }
 
     public ArrayList<LatLng> getEndPoints() {
-        return latlngs;
+        return end_latlngs;
+    }
+
+    public ArrayList<LatLng> getPoints() {
+        return all_latlngs;
     }
 }

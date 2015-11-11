@@ -122,6 +122,8 @@ public class MapActivity extends AppCompatActivity {
             if (!attraction_database.contains(result)) {
                 attraction_database.add(result);
                 putMarkers();
+                if (attraction_database.isUpdated())
+                    onPlot(findViewById(R.id.buttonPlot));
             }
         }
         else
@@ -194,12 +196,15 @@ public class MapActivity extends AppCompatActivity {
                     polyOptions.color(Color.MAGENTA);
                     break;
             }
-            polyOptions.width(10);
+            if (i != 0)
+                polyOptions.width(8);
+            else
+                polyOptions.width(15);
 
             if (plot_straight_route)
                 polyOptions.addAll(route_info.getEndPoints());
             else
-                polyOptions.addAll(route_info.getRoute().getPoints());
+                polyOptions.addAll(route_info.getPoints());
 
                 Polyline polyline = map.addPolyline(polyOptions);
             polylines.add(polyline);
