@@ -8,36 +8,35 @@
     android:paddingBottom="@dimen/activity_vertical_margin"
     >
 
-    <Button
+    <!--Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Start Journey"
         android:id="@+id/button2"
         android:onClick="testAsycn"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true" /-->
 
     <TextView
         android:text="Input two parts of strings"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/textView2"
-        android:layout_above="@+id/firstpart"
-        android:layout_alignParentStart="true"
-        android:layout_marginBottom="96dp" />
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true" />
 
     <EditText
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:id="@+id/firstpart"
-        android:layout_centerVertical="true"
+        android:layout_below="@+id/textView2"
         android:layout_alignParentStart="true" />
 
     <EditText
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:id="@+id/secondpart"
-        android:layout_above="@+id/display"
+        android:layout_below="@+id/firstpart"
         android:layout_alignParentStart="true" />
 
     <TextView
@@ -45,8 +44,8 @@
         android:layout_height="wrap_content"
         android:text="Display"
         android:id="@+id/display"
-        android:layout_above="@+id/update"
-        android:layout_alignParentStart="true" />
+        android:layout_below="@+id/secondpart"
+        android:layout_alignParentEnd="true" />
 
     <Button
         android:layout_width="wrap_content"
@@ -54,7 +53,7 @@
         android:text="Update"
         android:id="@+id/update"
         android:onClick="update"
-        android:layout_alignTop="@+id/stop"
+        android:layout_below="@+id/display"
         android:layout_alignParentStart="true" />
 
     <Button
@@ -63,8 +62,7 @@
         android:text="Stop"
         android:id="@+id/stop"
         android:onClick="reachDestination"
-        android:layout_above="@+id/button2"
-        android:layout_toEndOf="@+id/update"
-        android:layout_marginBottom="112dp" />
+        android:layout_below="@+id/display"
+        android:layout_alignEnd="@+id/display" />
 
 </RelativeLayout>
