@@ -17,17 +17,6 @@
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Plan Your Journey"
-        android:id="@+id/button"
-        android:onClick="searchPlace"
-        android:layout_alignBaseline="@+id/map"
-        android:layout_alignBottom="@+id/map"
-        android:layout_alignParentStart="true"
-        android:layout_marginStart="123dp" />
-
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -54,14 +43,6 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true" />
 
-    <!--<fragment-->
-        <!--android:id="@+id/map"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="fill_parent"-->
-        <!--class="com.google.android.gms.maps.SupportMapFragment"-->
-        <!--android:layout_alignParentEnd="true"-->
-        <!--android:layout_below="@+id/search" />-->
-
     <com.google.android.gms.maps.MapView android:id="@+id/mapview"
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
@@ -74,7 +55,7 @@
         android:text="Plot"
         android:id="@+id/buttonPlot"
         android:onClick="onPlot"
-        android:layout_below="@+id/editTextBudget"
+        android:layout_below="@+id/editText_budget"
         android:layout_alignEnd="@+id/textView" />
 
     <EditText
@@ -82,7 +63,7 @@
         android:layout_height="wrap_content"
         android:inputType="numberDecimal"
         android:ems="5"
-        android:id="@+id/editTextBudget"
+        android:id="@+id/editText_budget"
         android:layout_alignTop="@+id/editText"
         android:layout_alignEnd="@+id/buttonPlot" />
 

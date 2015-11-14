@@ -41,7 +41,6 @@ import com.example.liusu.travelapp.functionone.PathPlanner;
 public class Tab1 extends Fragment {
     LatLng coord;
     String attraction;
-    //public static GoogleMap map;
     MapView m;
     GoogleMap map;
     ArrayList<Marker> markers;
@@ -53,11 +52,6 @@ public class Tab1 extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         v = inflater.inflate(R.layout.tab_1, container, false);
-        //Intent myIntent = new Intent((MainActivity)getActivity(), MainActivity.class);
-        //(MainActivity)getActivity().
-        //startActivity(myIntent);
-        //Intent myIntent = new Intent((MainActivity)getActivity(), MapActivity.class);
-        //((MainActivity)getActivity()).startActivity(myIntent);
         markers = new ArrayList<>();
         polylines = new ArrayList<>();
         attraction_database = new AttractionDatabase(getContext());
@@ -69,36 +63,32 @@ public class Tab1 extends Fragment {
         map.setMyLocationEnabled(true);
 
         MapsInitializer.initialize(this.getActivity());
-        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(43.1, -87.9), 10);
-        map.animateCamera(cameraUpdate);
 
-        Button button = (Button) v.findViewById(R.id.search);
-        button.setOnClickListener(new OnClickListener()
+        Button button_search = (Button) v.findViewById(R.id.search);
+        button_search.setOnClickListener(new OnClickListener()
         {
-                  @Override
-                  public void onClick(View view) {
-              
-                      Database base = new Database();
-                      CharSequence database[][] = base.getData();
-              
-                      EditText et = (EditText) v.findViewById(R.id.editText);
-                      CharSequence inp = et.getText().toString().toLowerCase();
-              
-                      String result = getResult(inp, database);
-                      //Toast.makeText(getContext(), result, Toast.LENGTH_SHORT).show();
-              
-                      if (attraction_database.isUpdated()) {
-                          et.setText("");
-                          if (!attraction_database.contains(result)) {
-                              attraction_database.add(result);
-                              putMarkers();
-                              if (attraction_database.isUpdated())
-                                  onPlot(v.findViewById(R.id.buttonPlot));
-                          }
-                      }
-                      else
-                          Toast.makeText(getContext(), "Still downloading route information.", Toast.LENGTH_SHORT).show();
-                  }
+             @Override
+             public void onClick(View view) {
+                 search(view);
+             }
+        }); 
+
+        Button button_plot = (Button) v.findViewById(R.id.buttonPlot);
+        button_plot.setOnClickListener(new OnClickListener()
+        {
+             @Override
+             public void onClick(View view) {
+                 onPlot(view);
+             }
+        }); 
+
+        ToggleButton toggle_button_route = (ToggleButton) v.findViewById(R.id.toggleButton);
+        toggle_button_route.setOnClickListener(new OnClickListener()
+        {
+             @Override
+             public void onClick(View view) {
+                onChangePlotLine(view);
+             }
         }); 
         return v;
     }
@@ -127,39 +117,6 @@ public class Tab1 extends Fragment {
         m.onLowMemory();
     }
 
-    /*
-     *@Override
-     *public void onCreate(Bundle savedInstanceState) {
-     *    super.onCreate(savedInstanceState);
-     *    markers = new ArrayList<>();
-     *    polylines = new ArrayList<>();
-     *    attraction_database = new AttractionDatabase(getContext());
-     *}
-     */
-
-    /*
-     *@Override
-     *public void onStart() {
-     *    super.onStart();
-     *    try {
-     *        //SupportMapFragment mapFragment =
-     *                //(SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-     *        map = ((SupportMapFragment) MainActivity.fragmentManager
-     *            .findFragmentById(R.id.map)).getMap();
-     *        map = mapFragment.getMap();
-     *        map.setMyLocationEnabled(true);
-     *    }
-     *    catch (NullPointerException e) {
-     *        Toast.makeText(getContext(), "Google Play services is not available.", Toast.LENGTH_SHORT).show();
-     *        Log.e("e", "null pointer");
-     *    }
-     *    catch (Exception e) {
-     *        Log.e("e", "Some other exception");
-     *    }
-     *}
-     */
-
-
     public void onMapReady() {
         map.addMarker(new MarkerOptions().position(coord).title(attraction));
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(coord, 14));
@@ -187,31 +144,29 @@ public class Tab1 extends Fragment {
         return distance[lhs.length()][rhs.length()];
     }
 
-/*
- *    public void search(View view) {
- *
- *        Database base = new Database();
- *        CharSequence database[][] = base.getData();
- *
- *        EditText et = (EditText) v.findViewById(R.id.editText);
- *        CharSequence inp = et.getText().toString().toLowerCase();
- *
- *        String result = getResult(inp, database);
- *        //Toast.makeText(getContext(), result, Toast.LENGTH_SHORT).show();
- *
- *        if (attraction_database.isUpdated()) {
- *            et.setText("");
- *            if (!attraction_database.contains(result)) {
- *                attraction_database.add(result);
- *                putMarkers();
- *                if (attraction_database.isUpdated())
- *                    onPlot(v.findViewById(R.id.buttonPlot));
- *            }
- *        }
- *        else
- *            Toast.makeText(getContext(), "Still downloading route information.", Toast.LENGTH_SHORT).show();
- *    }
- */
+    public void search(View view) {
+
+        Database base = new Database();
+        CharSequence database[][] = base.getData();
+
+        EditText et = (EditText) v.findViewById(R.id.editText);
+        CharSequence inp = et.getText().toString().toLowerCase();
+
+        String result = getResult(inp, database);
+        //Toast.makeText(getContext(), result, Toast.LENGTH_SHORT).show();
+
+        if (attraction_database.isUpdated()) {
+            et.setText("");
+            if (!attraction_database.contains(result)) {
+                attraction_database.add(result);
+                putMarkers();
+                if (attraction_database.isUpdated())
+                    onPlot(v.findViewById(R.id.buttonPlot));
+            }
+        }
+        else
+            Toast.makeText(getContext(), "Still downloading route information.", Toast.LENGTH_SHORT).show();
+    }
 
     public void putMarkers() {
         removeMarkers();
@@ -237,7 +192,7 @@ public class Tab1 extends Fragment {
         markers.clear();
     }
 
-    public void onPlot(View v) {
+    public void onPlot(View view) {
         if (attraction_database.size() <= 1) {
             return;
         }
@@ -246,10 +201,10 @@ public class Tab1 extends Fragment {
                 Double budget = 0.0;
 
                 try {
-                    budget = Double.parseDouble(((EditText) v.findViewById(R.id.editTextBudget)).getText().toString());
+                    budget = Double.parseDouble(((EditText) v.findViewById(R.id.editText_budget)).getText().toString());
                 }
                 catch (Exception ex) {
-                    Log.e("e", ex.getMessage());
+                    Log.e("e", "budget is empty");
                 }
 
                 ArrayList<RouteInfo> path = PathPlanner.getPath(attraction_database.nameOf(0), budget, attraction_database);
