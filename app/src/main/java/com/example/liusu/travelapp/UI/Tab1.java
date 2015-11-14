@@ -22,6 +22,7 @@ import android.widget.ToggleButton;
 
 import com.example.liusu.travelapp.Database;
 import com.example.liusu.travelapp.MainActivity;
+import com.example.liusu.travelapp.MapActivity;
 import com.example.liusu.travelapp.R;
 
 
@@ -29,9 +30,11 @@ public class Tab1 extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v =inflater.inflate(R.layout.tab_1, container, false);
-        Intent myIntent = new Intent((MainActivity)getActivity(), MainActivity.class);
+        //Intent myIntent = new Intent((MainActivity)getActivity(), MainActivity.class);
         //(MainActivity)getActivity().
-        startActivity(myIntent);
+        //startActivity(myIntent);
+        //Intent myIntent = new Intent((MainActivity)getActivity(), MapActivity.class);
+        //((MainActivity)getActivity()).startActivity(myIntent);
         return v;
     }
 
