@@ -1,12 +1,16 @@
 package com.example.liusu.travelapp;
 
 import android.graphics.Color;
+import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -20,7 +24,7 @@ import com.google.android.gms.maps.model.*;
 import com.example.liusu.travelapp.functionone.AttractionDatabase;
 import com.example.liusu.travelapp.functionone.PathPlanner;
 
-public class MapActivity extends AppCompatActivity {
+public class MapActivity extends FragmentActivity {//AppCompatActivity {
     LatLng coord;
     String attraction;
     public static GoogleMap map;
@@ -28,6 +32,13 @@ public class MapActivity extends AppCompatActivity {
     ArrayList<Polyline> polylines;
     AttractionDatabase attraction_database;
     boolean plot_straight_route = false;
+
+    // @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View v =inflater.inflate(R.layout.tab_1,container,false);
+        return v;
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

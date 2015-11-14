@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
     ViewPager pager;
     ViewPagerAdapter adapter;
     SlidingTabLayout tabs;
-    CharSequence Titles[]={"Home","Events"};
+    CharSequence Titles[]={"Journey Planner","Additional Function"};
     int Numboftabs =2;
 
     @Override
