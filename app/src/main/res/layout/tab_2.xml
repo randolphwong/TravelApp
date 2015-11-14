@@ -17,7 +17,7 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" /-->
 
-    <TextView
+    <!--TextView
         android:text="Input two parts of strings"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -63,6 +63,6 @@
         android:id="@+id/stop"
         android:onClick="reachDestination"
         android:layout_below="@+id/display"
-        android:layout_alignEnd="@+id/display" />
+        android:layout_alignEnd="@+id/display" /-->
 
 </RelativeLayout>
