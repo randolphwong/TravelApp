@@ -8,6 +8,8 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.location.Address;
@@ -33,6 +35,8 @@ public class Tab2 extends Fragment{
     private TextView displayDestination;
     ArrayAdapter<String> adapter;
     private Geocoder geocoder;
+    private WebView wv1;
+
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         context = getContext();
@@ -44,6 +48,11 @@ public class Tab2 extends Fragment{
         acTextView.setAdapter(adapter);
         displayDestination = (TextView) v.findViewById(R.id.display);
         geocoder = new Geocoder(context);
+
+        // webview
+        wv1 = (WebView) v.findViewById(R.id.webView);
+        wv1.setWebViewClient(new MyBrowser());
+
         Button update = (Button) v.findViewById(R.id.update);
         update.setOnClickListener(new View.OnClickListener()
         {
@@ -60,7 +69,26 @@ public class Tab2 extends Fragment{
                 reachDestination();
             }
         });
+
+        Button search = (Button) v.findViewById(R.id.search);
+        search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                wv1.getSettings().setLoadsImagesAutomatically(true);
+                wv1.getSettings().setJavaScriptEnabled(true);
+                wv1.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
+                wv1.loadUrl("https://www.tripadvisor.com.sg/Tourism-g294264-Sentosa_Island-Vacations.html");
+            }
+        });
         return v;
+    }
+
+    private class MyBrowser extends WebViewClient {
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            view.loadUrl(url);
+            return true;
+        }
     }
 
     public void reachDestination() {
