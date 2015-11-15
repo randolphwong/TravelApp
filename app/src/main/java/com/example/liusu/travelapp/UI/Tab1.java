@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import com.example.liusu.travelapp.functionone.RouteInfo;
 import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.*;
-import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 
 import com.example.liusu.travelapp.functionone.AttractionDatabase;
 import com.example.liusu.travelapp.functionone.PathPlanner;
@@ -129,7 +128,6 @@ public class Tab1 extends Fragment {
         CharSequence inp = et.getText().toString().toLowerCase();
 
         String result = EditDistance.getResult(inp, database);
-        //Toast.makeText(getContext(), result, Toast.LENGTH_SHORT).show();
 
         if (attraction_database.isUpdated()) {
             et.setText("");
@@ -189,7 +187,6 @@ public class Tab1 extends Fragment {
                         PathPlanner.durationOf(path, attraction_database), PathPlanner.costOf(path, attraction_database)), Toast.LENGTH_SHORT).show();
         }
         else {
-            Log.i("i", "attraction database not yet ready.");
             Toast.makeText(getContext(), "Still downloading route information.", Toast.LENGTH_SHORT).show();
         }
     }

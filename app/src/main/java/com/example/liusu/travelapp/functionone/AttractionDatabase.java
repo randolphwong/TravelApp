@@ -80,19 +80,10 @@ public class AttractionDatabase implements RoutingListener {
         if (!name_database.contains(attraction)) {
             name_database.add(attraction);
 
-            // to address problem of failed update
-            // check if location already in database
-            
             if (updateLatLngDatabase(attraction) && size() > 1) {
-                Log.i("i", "Adding " + attraction);
                 updated = false;
-                long start_update = System.nanoTime();
                 updateCostDatabase(attraction);
-                long end_update = System.nanoTime();
-                long update_time = end_update - start_update;
-                Log.i("Performance test", "Sync/Download took: " + ((double) update_time / 1000000) + "ms.");
             }
-            //Toast.makeText(context, "Adding " + attraction + " to database.", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -102,12 +93,10 @@ public class AttractionDatabase implements RoutingListener {
             String previous_attraction = nameOf(i);
             String[] route_details = dbhandler.getRouteDetails(previous_attraction, latest_attraction);
             if (route_details[0] == null) {
-                Log.i("i", "Downloading using Google API.");
                 updateCostDatabaseWithAPI(previous_attraction, latest_attraction);
                 updateCostDatabaseWithAPI(latest_attraction, previous_attraction);
                 to_download = true;
             } else {
-                Log.i("i", "Getting information from SQL database.");
                 syncWithSQL(previous_attraction, latest_attraction);
                 syncWithSQL(latest_attraction, previous_attraction);
             }
@@ -119,34 +108,20 @@ public class AttractionDatabase implements RoutingListener {
     }
 
     private void syncWithSQL(String attraction1, String attraction2) {
-        // returns detail of the route in String[] format, 0-columnid, 1-longcoord, 2-latcoord, 3-walktime, 4-bustime, 5-taxitime, 6-buscost, 7-taxicost, 8-description
-        //public static EnumMap<TransportMode, ArrayList<LatLng>> stringToLatLngForAllMode(String[] latlng_string) {
         String[] route_details = dbhandler.getRouteDetails(attraction1, attraction2);
-        //Log.i("i", String.format("Syncing with SQl for %s to %s", attraction1, attraction2));
-        //Log.i("i", "columnid = " + route_details[0]);
-        //Log.i("i", "lat array = " + route_details[1]);
-        //Log.i("i", "lng array = " + route_details[2]);
-        //Log.i("i", "walk time = " + route_details[3]);
-        //Log.i("i", "bus time = " + route_details[4]);
-        //Log.i("i", "taxi time = " + route_details[5]);
-        //Log.i("i", "bus distance = " + route_details[6]);
-        //Log.i("i", "taxi distance = " + route_details[7]);
         RouteInfo foot_route_info = new RouteInfo(TransportMode.FOOT);
         RouteInfo bus_route_info = new RouteInfo(TransportMode.BUS);
         RouteInfo taxi_route_info = new RouteInfo(TransportMode.TAXI);
-//        String[] latlng_string = new String[]{route_details[1], route_details[2]};
-        //Log.i("i", "lat string:\n" + latlng_string[0]);
-        //Log.i("i", "lng string:\n" + latlng_string[1]);
         EnumMap<TransportMode, ArrayList<LatLng>> all_latlngs = LatLngParser.stringToLatLngForAllMode(new String[]{route_details[1], route_details[2]});
-        //Log.i("i", "size of latlng array = " + latlng_array.size());
-        //Log.i("i", "first latlng of latlng array = " + latlng_array.get(0));
-        //Log.i("i", "last latlng of latlng array = " + latlng_array.get(latlng_array.size() - 1));
+
         foot_route_info.setLatLng(all_latlngs.get(TransportMode.FOOT));
         foot_route_info.setDuration(Integer.parseInt(route_details[3]));
         foot_route_info.setDistance(0);
+
         bus_route_info.setLatLng(all_latlngs.get(TransportMode.BUS));
         bus_route_info.setDuration(Integer.parseInt(route_details[4]));
         bus_route_info.setDistance(Double.parseDouble(route_details[6]));
+
         taxi_route_info.setLatLng(all_latlngs.get(TransportMode.TAXI));
         taxi_route_info.setDuration(Integer.parseInt(route_details[5]));
         taxi_route_info.setDistance(Double.parseDouble(route_details[7]));
@@ -227,13 +202,11 @@ public class AttractionDatabase implements RoutingListener {
             routing.execute();
         }
         else {
-//            Log.i("i", "appending Routes, current places_to_be_updated.size() is: " + places_to_be_updated.size());
             appendRoutes();
         }
     }
 
     private void appendRoutes() {
-//        Log.i("i", "In appendRoutes");
         for (int i = 0; i != places_to_be_updated.size(); ++i) {
             NodePairInfo info = places_to_be_updated.get(i);
             Integer source = indexOf(info.getSource());
@@ -243,10 +216,6 @@ public class AttractionDatabase implements RoutingListener {
             route_info.addEndLatLng(latlng_database.get(source));
             route_info.addEndLatLng(latlng_database.get(destination));
             cost_database.add(source, destination, route_info);
-            //Log.i("i", "end points: " + route_info.getEndPoints());
-            //Log.i("i", "first index of all points: " + route_info.getPoints().get(0));
-            //Log.i("i", "last index of all points: " + route_info.getPoints().get(route_info.getPoints().size() - 1));
-//            Log.i("i", String.format("cost_database.add(%d, %d, %s)", source, destination, route_info.getTransportMode()));
         }
         places_to_be_updated.clear();
         updateSQLDatabase();
@@ -266,9 +235,6 @@ public class AttractionDatabase implements RoutingListener {
     }
 
     private void updateSQLDatabase(String attraction1, String attraction2) {
-        //Log.i("i", "lat: " + latlng_string[0]);
-        //Log.i("i", "lng: " + latlng_string[1]);
-        //public static String[] latLngToStringForAllMode(EnumMap<TransportMode, ArrayList<LatLng>> all_latlngs) {
         EnumMap<TransportMode, ArrayList<LatLng>> all_latlngs = new EnumMap<>(TransportMode.class);
         all_latlngs.put(TransportMode.FOOT,
                 routeInfoBetween(attraction1, attraction2, TransportMode.toString(TransportMode.FOOT)).getPoints());
@@ -310,8 +276,6 @@ public class AttractionDatabase implements RoutingListener {
         if (route.size() != 0) {
             info.setRoute(route.get(shortestRouteIndex));
             places_to_be_updated.add(info);
-//            Log.i("i", String.format("Routing success, NodePairInfo(%s, %s, %s) added to places_to_be_updated",
-//                    info.getSource(), info.getDestination(), info.getTransportMode()));
             places_to_be_routed.remove(places_to_be_routed.size() - 1);
         }
         else {
@@ -337,17 +301,9 @@ public class AttractionDatabase implements RoutingListener {
         return cost_database.timeBetween(source, destination, transport_mode);
     }
 
-//    public double costBetween(int source, int destination) {
-//        return costBetween(source, destination, TransportMode.TAXI);
-//    }
-
     public double costBetween(int source, int destination, TransportMode transport_mode) {
         return cost_database.costBetween(source, destination, transport_mode);
     }
-
-//    public int timeBetween(String source, String destination) {
-//        return timeBetween(indexOf(source), indexOf(destination), TransportMode.TAXI);
-//    }
 
     public int travelTimeOf(LinkedList<Integer> path) {
         int sum = 0;
@@ -357,14 +313,6 @@ public class AttractionDatabase implements RoutingListener {
         return sum;
     }
 
-//    public double travelCostOf(LinkedList<Integer> path) {
-//        double sum = 0;
-//        for (int i = 0; i != path.size() - 1; ++i) {
-//            sum += costBetween(path.get(i), path.get(i + 1));
-//        }
-//        return sum;
-//    }
-
     public int travelTimeOf(IncidentArray[] path) {
         int sum = 0;
         for (int i = 0; i != path.length; ++i) {
@@ -372,14 +320,6 @@ public class AttractionDatabase implements RoutingListener {
         }
         return sum;
     }
-
-//    public double travelCostOf(IncidentArray[] path) {
-//        double sum = 0;
-//        for (int i = 0; i != path.length; ++i) {
-//            sum += costBetween(i, path[i].getDestinationNode(), path[i].getTransportMode());
-//        }
-//        return sum;
-//    }
 
     public int travelTimeOf(ArrayList<RouteInfo> path) {
         int sum = 0;
