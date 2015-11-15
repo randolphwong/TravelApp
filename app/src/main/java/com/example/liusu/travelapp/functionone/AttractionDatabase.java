@@ -192,6 +192,11 @@ public class AttractionDatabase implements RoutingListener {
             TransportMode mode = info.getTransportMode();
             LatLng start = latLngOf(source);
             LatLng end = latLngOf(destination);
+            if (source.equals("singapore zoo"))
+                start = new LatLng(1.407396, 103.783529);
+            if (destination.equals("singapore zoo")) {
+                end = new LatLng(1.407396, 103.783529);
+            }
 
             Routing routing = new Routing.Builder()
                     .travelMode(mode.toAbstractRoutingTravelMode())
