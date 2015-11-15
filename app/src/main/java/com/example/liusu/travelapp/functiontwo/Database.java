@@ -5,7 +5,7 @@ public class Database {
     private CharSequence SF[] = {"Singapore","singapore","Flyer","flyer","Singapore Flyer","singapore flyer"};
     private CharSequence VC[] = {"Vivo","vivo","City","city","Vivo City","vivo city"};
     private CharSequence RWS[] = {"Resort","resort","World","world","Sentosa","sentosa","Resort World Sentosa","resort world sentosa"};
-    private CharSequence BTRT[] = {"Buddha","buddla","Tooth","tooth","Relic","relic","Temple","temple","Buddha Tooth Relic Temple","buddha toothe relic temple"};
+    private CharSequence BTRT[] = {"Buddha","buddla","Tooth","tooth","Relic","relic","Temple","temple","Buddha Tooth Relic Temple","buddha tooth relic temple"};
     private CharSequence SZ[] = {"Zoo","zoo","Singapore Zoo","singapore zoo"};
     private CharSequence GBTB[] = {"gardens", "bay", "Gardens by the Bay", "gardens by the bay"};
     private CharSequence GMRB[] = {"g-max", "bungy", "G-Max Reverse Bungy", "gmax reverse bungy"};

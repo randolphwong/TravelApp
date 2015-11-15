@@ -16,11 +16,13 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.liusu.travelapp.AdditionalFunction.CheckLocationBackground;
 import com.example.liusu.travelapp.R;
 import com.example.liusu.travelapp.functiontwo.Database;
 import com.example.liusu.travelapp.functiontwo.EditDistance;
+import com.example.liusu.travelapp.functiontwo.GetUrl;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.List;
@@ -49,7 +51,6 @@ public class Tab2 extends Fragment{
         displayDestination = (TextView) v.findViewById(R.id.display);
         geocoder = new Geocoder(context);
 
-        // webview
         wv1 = (WebView) v.findViewById(R.id.webView);
         wv1.setWebViewClient(new MyBrowser());
 
@@ -70,16 +71,6 @@ public class Tab2 extends Fragment{
             }
         });
 
-        Button search = (Button) v.findViewById(R.id.search);
-        search.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                wv1.getSettings().setLoadsImagesAutomatically(true);
-                wv1.getSettings().setJavaScriptEnabled(true);
-                wv1.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
-                wv1.loadUrl("https://www.tripadvisor.com.sg/Tourism-g294264-Sentosa_Island-Vacations.html");
-            }
-        });
         return v;
     }
 
@@ -99,8 +90,10 @@ public class Tab2 extends Fragment{
         Database db = new Database();
         String attractionName = EditDistance.getResult(nextDestination,db.getData());
         setNextDestination(attractionName);
+        Toast.makeText(context, "" + attractionName ,Toast.LENGTH_SHORT).show();
         displayDestination.setText(locationOfNextDestination.toString());
         getActivity().startService(new Intent(getActivity(), CheckLocationBackground.class));
+        displayWeb(GetUrl.getUrl(attractionName));
     }
     public void setNextDestination(String attraction){
 
@@ -114,4 +107,17 @@ public class Tab2 extends Fragment{
             e.printStackTrace();
         }
     }
+
+    public void displayWeb(String url){
+        wv1.getSettings().setLoadsImagesAutomatically(true);
+        wv1.getSettings().setJavaScriptEnabled(true);
+        wv1.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
+        if(url != null){
+            wv1.loadUrl(url);
+        }else{
+            Toast.makeText(context, "Null URL" ,Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
 }
