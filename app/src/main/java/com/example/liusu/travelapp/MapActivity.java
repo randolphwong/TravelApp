@@ -234,7 +234,7 @@ public class MapActivity extends FragmentActivity {//AppCompatActivity {
         polylines.clear();
     }
 
-    public String getResult(CharSequence input, CharSequence[][] database){
+    public static String getResult(CharSequence input, CharSequence[][] database){
         String result = "";
         int currentEditDistance = input.toString().length();
         int currentRow = 0;

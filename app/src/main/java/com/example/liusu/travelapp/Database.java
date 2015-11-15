@@ -1,8 +1,5 @@
 package com.example.liusu.travelapp;
 
-/**
- * Created by liusu on 22/10/15.
- */
 public class Database {
     private CharSequence MBS[] = {"Marina","marina","Bay","bay","Sands","sands","Marina Bay Sands","marina bay sands"};
     private CharSequence SF[] = {"Singapore","singapore","Flyer","flyer","Singapore Flyer","singapore flyer"};
@@ -19,5 +16,8 @@ public class Database {
 
     public CharSequence[][] getData(){
         return data;
+    }
+    public String[] getList(){
+        return new String[] {MBS[MBS.length-2].toString(),  SF[SF.length-2].toString(),VC[VC.length-2].toString(),RWS[RWS.length-2].toString(),BTRT[BTRT.length-2].toString(),SZ[SZ.length-2].toString(),GBTB[GBTB.length-2].toString(),NW[NW.length-2].toString(),GMRB[GMRB.length-2].toString(),FCP[FCP.length-2].toString()};
     }
 }

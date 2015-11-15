@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.EnumMap;
 
-import java.io.IOException;
-
 import android.util.Log;
 import android.widget.Toast;
 import android.location.Address;
@@ -19,7 +17,6 @@ import com.example.liusu.travelapp.sqldatabase.DBRoute;
 import com.example.liusu.travelapp.sqldatabase.MyDBHandler;
 import com.example.liusu.travelapp.sqldatabase.LatLngParser;
 
-import com.directions.route.AbstractRouting;
 import com.directions.route.Route;
 import com.directions.route.Routing;
 import com.directions.route.RoutingListener;
@@ -27,7 +24,6 @@ import com.directions.route.RoutingListener;
 import com.google.android.gms.maps.model.LatLng;
 
 public class AttractionDatabase implements RoutingListener {
-    private FileDatabase file_database;
 
     private ArrayList<String> name_database;
     private HashMap<Integer, LatLng> latlng_database;
@@ -41,8 +37,6 @@ public class AttractionDatabase implements RoutingListener {
     private boolean updated = true;
 
     private MyDBHandler dbhandler;
-
-    public AttractionDatabase() {}
 
     public AttractionDatabase(Context context) {
         name_database = new ArrayList<>();
@@ -140,7 +134,7 @@ public class AttractionDatabase implements RoutingListener {
         RouteInfo foot_route_info = new RouteInfo(TransportMode.FOOT);
         RouteInfo bus_route_info = new RouteInfo(TransportMode.BUS);
         RouteInfo taxi_route_info = new RouteInfo(TransportMode.TAXI);
-        String[] latlng_string = new String[]{route_details[1], route_details[2]};
+//        String[] latlng_string = new String[]{route_details[1], route_details[2]};
         //Log.i("i", "lat string:\n" + latlng_string[0]);
         //Log.i("i", "lng string:\n" + latlng_string[1]);
         EnumMap<TransportMode, ArrayList<LatLng>> all_latlngs = LatLngParser.stringToLatLngForAllMode(new String[]{route_details[1], route_details[2]});
@@ -180,7 +174,7 @@ public class AttractionDatabase implements RoutingListener {
         double latitude, longitude;
         boolean geocoder_success = false;
         Geocoder geocoder = new Geocoder(context);
-        List<Address> matched_list = null;
+        List<Address> matched_list;
         try {
             matched_list = geocoder.getFromLocationName(attraction, 1);
             latitude = matched_list.get(0).getLatitude();
@@ -343,17 +337,17 @@ public class AttractionDatabase implements RoutingListener {
         return cost_database.timeBetween(source, destination, transport_mode);
     }
 
-    public double costBetween(int source, int destination) {
-        return costBetween(source, destination, TransportMode.TAXI);
-    }
+//    public double costBetween(int source, int destination) {
+//        return costBetween(source, destination, TransportMode.TAXI);
+//    }
 
     public double costBetween(int source, int destination, TransportMode transport_mode) {
         return cost_database.costBetween(source, destination, transport_mode);
     }
 
-    public int timeBetween(String source, String destination) {
-        return timeBetween(indexOf(source), indexOf(destination), TransportMode.TAXI);
-    }
+//    public int timeBetween(String source, String destination) {
+//        return timeBetween(indexOf(source), indexOf(destination), TransportMode.TAXI);
+//    }
 
     public int travelTimeOf(LinkedList<Integer> path) {
         int sum = 0;
@@ -363,13 +357,13 @@ public class AttractionDatabase implements RoutingListener {
         return sum;
     }
 
-    public double travelCostOf(LinkedList<Integer> path) {
-        double sum = 0;
-        for (int i = 0; i != path.size() - 1; ++i) {
-            sum += costBetween(path.get(i), path.get(i + 1));
-        }
-        return sum;
-    }
+//    public double travelCostOf(LinkedList<Integer> path) {
+//        double sum = 0;
+//        for (int i = 0; i != path.size() - 1; ++i) {
+//            sum += costBetween(path.get(i), path.get(i + 1));
+//        }
+//        return sum;
+//    }
 
     public int travelTimeOf(IncidentArray[] path) {
         int sum = 0;
@@ -379,13 +373,13 @@ public class AttractionDatabase implements RoutingListener {
         return sum;
     }
 
-    public double travelCostOf(IncidentArray[] path) {
-        double sum = 0;
-        for (int i = 0; i != path.length; ++i) {
-            sum += costBetween(i, path[i].getDestinationNode(), path[i].getTransportMode());
-        }
-        return sum;
-    }
+//    public double travelCostOf(IncidentArray[] path) {
+//        double sum = 0;
+//        for (int i = 0; i != path.length; ++i) {
+//            sum += costBetween(i, path[i].getDestinationNode(), path[i].getTransportMode());
+//        }
+//        return sum;
+//    }
 
     public int travelTimeOf(ArrayList<RouteInfo> path) {
         int sum = 0;

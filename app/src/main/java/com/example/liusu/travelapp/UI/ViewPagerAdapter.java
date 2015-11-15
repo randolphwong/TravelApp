@@ -1,8 +1,5 @@
 package com.example.liusu.travelapp.UI;
 
-/**
- * Created by lx on 2015/11/8.
- */
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
