@@ -8,9 +8,9 @@ public class Database {
     private CharSequence BTRT[] = {"Buddha","buddla","Tooth","tooth","Relic","relic","Temple","temple","Buddha Tooth Relic Temple","buddha toothe relic temple"};
     private CharSequence SZ[] = {"Zoo","zoo","Singapore Zoo","singapore zoo"};
     private CharSequence GBTB[] = {"gardens", "bay", "Gardens by the Bay"};
-    private CharSequence NW[] = {"newwater", "centre", "NEWater Visitor Centre"};
-    private CharSequence GMRB[] = {"g-max", "bungy", "G-Max Reverse Bungy"};
-    private CharSequence FCP[] = {"fort", "canning", "park", "Fort Canning Park"};
+    private CharSequence NW[] = {"newwater", "centre", "NEWater Visitor Centre", "newater visitor centre"};
+    private CharSequence GMRB[] = {"g-max", "bungy", "G-Max Reverse Bungy", "gmax reverse bungy"};
+    private CharSequence FCP[] = {"fort", "canning", "park", "Fort Canning Park", "fort canning park"};
 
     private CharSequence data[][] = {MBS,SF,VC,RWS,BTRT,SZ, GBTB, NW, GMRB, FCP};
 
