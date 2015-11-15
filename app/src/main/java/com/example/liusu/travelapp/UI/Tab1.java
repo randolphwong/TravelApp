@@ -171,24 +171,38 @@ public class Tab1 extends Fragment {
             return;
         }
         if (attraction_database.isUpdated()) {
-            removePolylines();
-                Double budget = 0.0;
-
-                try {
-                    budget = Double.parseDouble(((EditText) v.findViewById(R.id.editText_budget)).getText().toString());
-                }
-                catch (Exception ex) {
-                    Log.e("e", "budget is empty");
-                }
-
-                ArrayList<RouteInfo> path = PathPlanner.getPath(attraction_database.nameOf(0), budget, attraction_database);
-                plotPath(path);
-                Toast.makeText(getContext(), String.format("Journey time: %dmins\nJourney cost: $%.2f",
-                        PathPlanner.durationOf(path, attraction_database), PathPlanner.costOf(path, attraction_database)), Toast.LENGTH_SHORT).show();
+            ArrayList<RouteInfo> path = plotPath();
+            Toast.makeText(getContext(), String.format("Journey time: %dmins\nJourney cost: $%.2f",
+                    PathPlanner.durationOf(path, attraction_database), PathPlanner.costOf(path, attraction_database)), Toast.LENGTH_SHORT).show();
         }
         else {
             Toast.makeText(getContext(), "Still downloading route information.", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public void onChangePlotLine(View view) {
+        plot_straight_route = ((ToggleButton) view).isChecked();
+        if (attraction_database.size() <= 1) {
+            return;
+        }
+        if (attraction_database.isUpdated())
+            plotPath();
+    }
+
+    public ArrayList<RouteInfo> plotPath() {
+        removePolylines();
+        Double budget = 0.0;
+
+        try {
+            budget = Double.parseDouble(((EditText) v.findViewById(R.id.editText_budget)).getText().toString());
+        }
+        catch (Exception ex) {
+            Log.e("e", "budget is empty");
+        }
+
+        ArrayList<RouteInfo> path = PathPlanner.getPath(attraction_database.nameOf(0), budget, attraction_database);
+        plotPath(path);
+        return path;
     }
 
     public void plotPath(ArrayList<RouteInfo> path) {
@@ -220,11 +234,6 @@ public class Tab1 extends Fragment {
                 Polyline polyline = map.addPolyline(polyOptions);
             polylines.add(polyline);
         }
-    }
-
-    public void onChangePlotLine(View view) {
-        plot_straight_route = ((ToggleButton) view).isChecked();
-        onPlot(v.findViewById(R.id.buttonPlot));
     }
 
     public void removePolylines() {
