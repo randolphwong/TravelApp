@@ -90,7 +90,6 @@ public class Tab2 extends Fragment{
         Database db = new Database();
         String attractionName = EditDistance.getResult(nextDestination,db.getData());
         setNextDestination(attractionName);
-        Toast.makeText(context, "" + attractionName ,Toast.LENGTH_SHORT).show();
         displayDestination.setText(locationOfNextDestination.toString());
         getActivity().startService(new Intent(getActivity(), CheckLocationBackground.class));
         displayWeb(GetUrl.getUrl(attractionName));
