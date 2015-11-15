@@ -21,6 +21,8 @@ import android.widget.EditText;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 import android.widget.Button;
+import android.widget.AutoCompleteTextView;
+import android.widget.ArrayAdapter;
 
 import java.util.ArrayList;
 
@@ -44,6 +46,8 @@ public class Tab1 extends Fragment {
     ArrayList<Polyline> polylines;
     AttractionDatabase attraction_database;
     boolean plot_straight_route = false;
+    AutoCompleteTextView acTextView;
+    ArrayAdapter<String> adapter;
     View v;
 
     @Override
@@ -60,6 +64,13 @@ public class Tab1 extends Fragment {
         map.setMyLocationEnabled(true);
 
         MapsInitializer.initialize(this.getActivity());
+
+        // autocomplete
+        Database db = new Database();
+        adapter = new ArrayAdapter<>(getContext(),android.R.layout.select_dialog_singlechoice,db.getList());
+        acTextView= (AutoCompleteTextView)v.findViewById(R.id.autocomplete_attraction_input);
+        acTextView.setThreshold(1);
+        acTextView.setAdapter(adapter);
 
         Button button_search = (Button) v.findViewById(R.id.search);
         button_search.setOnClickListener(new OnClickListener()
@@ -124,13 +135,12 @@ public class Tab1 extends Fragment {
         Database base = new Database();
         CharSequence database[][] = base.getData();
 
-        EditText et = (EditText) v.findViewById(R.id.editText);
-        CharSequence inp = et.getText().toString().toLowerCase();
+        CharSequence inp = acTextView.getText().toString().toLowerCase();
 
         String result = EditDistance.getResult(inp, database);
 
         if (attraction_database.isUpdated()) {
-            et.setText("");
+            acTextView.setText("");
             if (!attraction_database.contains(result)) {
                 attraction_database.add(result);
                 putMarkers();
