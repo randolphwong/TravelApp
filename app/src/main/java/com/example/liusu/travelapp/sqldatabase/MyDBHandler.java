@@ -1,7 +1,5 @@
 package com.example.liusu.travelapp.sqldatabase;
 
-import android.database.sqlite.SQLiteOpenHelper;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;

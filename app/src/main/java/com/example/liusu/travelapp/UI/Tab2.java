@@ -18,9 +18,9 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.liusu.travelapp.AdditionalFunction.CheckLocationBackground;
-import com.example.liusu.travelapp.FunctionTwo.Database;
-import com.example.liusu.travelapp.FunctionTwo.EditDistance;
 import com.example.liusu.travelapp.R;
+import com.example.liusu.travelapp.functiontwo.Database;
+import com.example.liusu.travelapp.functiontwo.EditDistance;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.List;

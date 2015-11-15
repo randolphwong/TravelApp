@@ -24,14 +24,12 @@ public class EditDistance {
     }
 
     public static String getResult(CharSequence input, CharSequence[][] database){
-        String result = "";
         int currentEditDistance = input.toString().length();
         int currentRow = 0;
         for(int i = 0 ; i < database.length ; i++){
             for(int j = 0 ; j < database[i].length ; j++){
                 if(computeLevenshteinDistance(input,database[i][j]) < currentEditDistance){
                     currentEditDistance = computeLevenshteinDistance(input,database[i][j]);
-                    result = database[i][j].toString();
                     currentRow = i;
                 }
             }

@@ -20,12 +20,12 @@ import android.widget.EditText;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
-import com.example.liusu.travelapp.FunctionOne.AttractionDatabase;
-import com.example.liusu.travelapp.FunctionOne.PathPlanner;
-import com.example.liusu.travelapp.FunctionOne.RouteInfo;
-import com.example.liusu.travelapp.FunctionTwo.Database;
-import com.example.liusu.travelapp.FunctionTwo.EditDistance;
 import com.example.liusu.travelapp.R;
+import com.example.liusu.travelapp.functionone.AttractionDatabase;
+import com.example.liusu.travelapp.functionone.PathPlanner;
+import com.example.liusu.travelapp.functionone.RouteInfo;
+import com.example.liusu.travelapp.functiontwo.Database;
+import com.example.liusu.travelapp.functiontwo.EditDistance;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;

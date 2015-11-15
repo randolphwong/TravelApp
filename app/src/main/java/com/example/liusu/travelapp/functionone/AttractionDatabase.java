@@ -1,27 +1,24 @@
 package com.example.liusu.travelapp.functionone;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.HashMap;
-import java.util.EnumMap;
-
-import android.util.Log;
-import android.widget.Toast;
+import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
-import android.content.Context;
-
-
-import com.example.liusu.travelapp.sqldatabase.DBRoute;
-import com.example.liusu.travelapp.sqldatabase.MyDBHandler;
-import com.example.liusu.travelapp.sqldatabase.LatLngParser;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.directions.route.Route;
 import com.directions.route.Routing;
 import com.directions.route.RoutingListener;
-
+import com.example.liusu.travelapp.sqldatabase.DBRoute;
+import com.example.liusu.travelapp.sqldatabase.LatLngParser;
+import com.example.liusu.travelapp.sqldatabase.MyDBHandler;
 import com.google.android.gms.maps.model.LatLng;
+
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 public class AttractionDatabase implements RoutingListener {
 

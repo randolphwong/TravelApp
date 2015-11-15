@@ -1,13 +1,10 @@
 package com.example.liusu.travelapp.sqldatabase;
 
-import java.util.ArrayList;
-import java.util.EnumMap;
-
-import android.util.Log;
-
+import com.example.liusu.travelapp.functionone.TransportMode;
 import com.google.android.gms.maps.model.LatLng;
 
-import com.example.liusu.travelapp.functionone.TransportMode;
+import java.util.ArrayList;
+import java.util.EnumMap;
 
 public class LatLngParser {
     public static ArrayList<Double> stringToDoubleArray(String double_string) {
@@ -56,12 +53,12 @@ public class LatLngParser {
             //Log.i("i", s);
         String[] lng_string_split_by_transport_mode = latlng_string[1].split(":");
         // for each lat_string and lng_string of the respective transport mode, convert to double array
-        ArrayList<Double> lat_array_foot = new ArrayList<>();
-        ArrayList<Double> lat_array_bus = new ArrayList<>();
-        ArrayList<Double> lat_array_taxi = new ArrayList<>();
-        ArrayList<Double> lng_array_foot = new ArrayList<>();
-        ArrayList<Double> lng_array_bus = new ArrayList<>();
-        ArrayList<Double> lng_array_taxi = new ArrayList<>();
+        ArrayList<Double> lat_array_foot;
+        ArrayList<Double> lat_array_bus;
+        ArrayList<Double> lat_array_taxi;
+        ArrayList<Double> lng_array_foot;
+        ArrayList<Double> lng_array_bus;
+        ArrayList<Double> lng_array_taxi;
 
         lat_array_foot = LatLngParser.stringToDoubleArray(lat_string_split_by_transport_mode[0]);
         lat_array_bus = LatLngParser.stringToDoubleArray(lat_string_split_by_transport_mode[1]);
@@ -90,8 +87,8 @@ public class LatLngParser {
     }
 
     public static String[] latLngToStringForAllMode(EnumMap<TransportMode, ArrayList<LatLng>> all_latlngs) {
-        String lat_string = new String();
-        String lng_string = new String();
+        String lat_string;
+        String lng_string;
         String[] latlng_string_foot = LatLngParser.latLngToString(all_latlngs.get(TransportMode.FOOT));
         String[] latlng_string_bus = LatLngParser.latLngToString(all_latlngs.get(TransportMode.BUS));
         String[] latlng_string_taxi = LatLngParser.latLngToString(all_latlngs.get(TransportMode.TAXI));

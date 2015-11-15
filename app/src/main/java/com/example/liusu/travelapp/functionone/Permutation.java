@@ -1,7 +1,6 @@
 package com.example.liusu.travelapp.functionone;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Permutation {
     public static ArrayList<ArrayList<Integer>> getPermutations(ArrayList<Integer> arraylist, int start_index, int end_index) {
