@@ -21,21 +21,20 @@ import android.widget.EditText;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 import android.widget.Button;
+import android.widget.AutoCompleteTextView;
+import android.widget.ArrayAdapter;
 
 import java.util.ArrayList;
-
-import com.example.liusu.travelapp.Database;
-import com.example.liusu.travelapp.MainActivity;
-import com.example.liusu.travelapp.MapActivity;
-import com.example.liusu.travelapp.R;
 
 import com.example.liusu.travelapp.functionone.RouteInfo;
 import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.*;
-import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 
 import com.example.liusu.travelapp.functionone.AttractionDatabase;
 import com.example.liusu.travelapp.functionone.PathPlanner;
+import com.example.liusu.travelapp.functiontwo.Database;
+import com.example.liusu.travelapp.functiontwo.EditDistance;
+import com.example.liusu.travelapp.R;
 
 
 public class Tab1 extends Fragment {
@@ -47,6 +46,8 @@ public class Tab1 extends Fragment {
     ArrayList<Polyline> polylines;
     AttractionDatabase attraction_database;
     boolean plot_straight_route = false;
+    AutoCompleteTextView acTextView;
+    ArrayAdapter<String> adapter;
     View v;
 
     @Override
@@ -63,6 +64,13 @@ public class Tab1 extends Fragment {
         map.setMyLocationEnabled(true);
 
         MapsInitializer.initialize(this.getActivity());
+
+        // autocomplete
+        Database db = new Database();
+        adapter = new ArrayAdapter<>(getContext(),android.R.layout.select_dialog_singlechoice,db.getList());
+        acTextView= (AutoCompleteTextView)v.findViewById(R.id.autocomplete_attraction_input);
+        acTextView.setThreshold(1);
+        acTextView.setAdapter(adapter);
 
         Button button_search = (Button) v.findViewById(R.id.search);
         button_search.setOnClickListener(new OnClickListener()
@@ -122,41 +130,17 @@ public class Tab1 extends Fragment {
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(coord, 14));
     }
 
-    public static int minimum(int a, int b, int c) {
-        return Math.min(Math.min(a, b), c);
-    }
-
-    public static int computeLevenshteinDistance(CharSequence lhs, CharSequence rhs) {
-        int[][] distance = new int[lhs.length() + 1][rhs.length() + 1];
-
-        for (int i = 0; i <= lhs.length(); i++)
-            distance[i][0] = i;
-        for (int j = 1; j <= rhs.length(); j++)
-            distance[0][j] = j;
-
-        for (int i = 1; i <= lhs.length(); i++)
-            for (int j = 1; j <= rhs.length(); j++)
-                distance[i][j] = minimum(
-                        distance[i - 1][j] + 1,
-                        distance[i][j - 1] + 1,
-                        distance[i - 1][j - 1] + ((lhs.charAt(i - 1) == rhs.charAt(j - 1)) ? 0 : 1));
-
-        return distance[lhs.length()][rhs.length()];
-    }
-
     public void search(View view) {
 
         Database base = new Database();
         CharSequence database[][] = base.getData();
 
-        EditText et = (EditText) v.findViewById(R.id.editText);
-        CharSequence inp = et.getText().toString().toLowerCase();
+        CharSequence inp = acTextView.getText().toString().toLowerCase();
 
-        String result = getResult(inp, database);
-        //Toast.makeText(getContext(), result, Toast.LENGTH_SHORT).show();
+        String result = EditDistance.getResult(inp, database);
 
         if (attraction_database.isUpdated()) {
-            et.setText("");
+            acTextView.setText("");
             if (!attraction_database.contains(result)) {
                 attraction_database.add(result);
                 putMarkers();
@@ -197,25 +181,38 @@ public class Tab1 extends Fragment {
             return;
         }
         if (attraction_database.isUpdated()) {
-            removePolylines();
-                Double budget = 0.0;
-
-                try {
-                    budget = Double.parseDouble(((EditText) v.findViewById(R.id.editText_budget)).getText().toString());
-                }
-                catch (Exception ex) {
-                    Log.e("e", "budget is empty");
-                }
-
-                ArrayList<RouteInfo> path = PathPlanner.getPath(attraction_database.nameOf(0), budget, attraction_database);
-                plotPath(path);
-                Toast.makeText(getContext(), String.format("Journey time: %dmins\nJourney cost: $%f",
-                        PathPlanner.durationOf(path, attraction_database), PathPlanner.costOf(path, attraction_database)), Toast.LENGTH_SHORT).show();
+            ArrayList<RouteInfo> path = plotPath();
+            Toast.makeText(getContext(), String.format("Journey time: %dmins\nJourney cost: $%.2f",
+                    PathPlanner.durationOf(path, attraction_database), PathPlanner.costOf(path, attraction_database)), Toast.LENGTH_SHORT).show();
         }
         else {
-            Log.i("i", "attraction database not yet ready.");
             Toast.makeText(getContext(), "Still downloading route information.", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public void onChangePlotLine(View view) {
+        plot_straight_route = ((ToggleButton) view).isChecked();
+        if (attraction_database.size() <= 1) {
+            return;
+        }
+        if (attraction_database.isUpdated())
+            plotPath();
+    }
+
+    public ArrayList<RouteInfo> plotPath() {
+        removePolylines();
+        Double budget = 0.0;
+
+        try {
+            budget = Double.parseDouble(((EditText) v.findViewById(R.id.editText_budget)).getText().toString());
+        }
+        catch (Exception ex) {
+            Log.e("e", "budget is empty");
+        }
+
+        ArrayList<RouteInfo> path = PathPlanner.getPath(attraction_database.nameOf(0), budget, attraction_database);
+        plotPath(path);
+        return path;
     }
 
     public void plotPath(ArrayList<RouteInfo> path) {
@@ -249,31 +246,10 @@ public class Tab1 extends Fragment {
         }
     }
 
-    public void onChangePlotLine(View view) {
-        plot_straight_route = ((ToggleButton) view).isChecked();
-        onPlot(v.findViewById(R.id.buttonPlot));
-    }
-
     public void removePolylines() {
         for (int i = 0; i != polylines.size(); ++i) {
             polylines.get(i).remove();
         }
         polylines.clear();
-    }
-
-    public String getResult(CharSequence input, CharSequence[][] database){
-        String result = "";
-        int currentEditDistance = input.toString().length();
-        int currentRow = 0;
-        for(int i = 0 ; i < database.length ; i++){
-            for(int j = 0 ; j < database[i].length ; j++){
-                if(computeLevenshteinDistance(input,database[i][j]) < currentEditDistance){
-                    currentEditDistance = computeLevenshteinDistance(input,database[i][j]);
-                    result = database[i][j].toString();
-                    currentRow = i;
-                }
-            }
-        }
-        return database[currentRow][database[currentRow].length-1].toString();
     }
 }

@@ -1,7 +1,5 @@
 package com.example.liusu.travelapp.functionone;
 
-import android.util.Log;
-
 import java.util.EnumMap;
 
 public class TravelCost {
@@ -25,6 +23,5 @@ public class TravelCost {
 
     public void addRouteInfo(RouteInfo route_info) {
         route_infos.put(route_info.getTransportMode(), route_info);
-//        Log.i("i", "route_info for transport mode: " + route_info.getTransportMode() + " added to TravelCost.");
     }
 }
