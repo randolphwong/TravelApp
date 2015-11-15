@@ -1,4 +1,4 @@
-package com.example.liusu.travelapp;
+package com.example.liusu.travelapp.functiontwo;
 
 public class Database {
     private CharSequence MBS[] = {"Marina","marina","Bay","bay","Sands","sands","Marina Bay Sands","marina bay sands"};

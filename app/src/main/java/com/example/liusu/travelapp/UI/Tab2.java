@@ -16,10 +16,10 @@ import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
 
 import com.example.liusu.travelapp.AdditionalFunction.CheckLocationBackground;
+import com.example.liusu.travelapp.functiontwo.Database;
+import com.example.liusu.travelapp.functiontwo.EditDistance;
 import com.example.liusu.travelapp.R;
 import com.google.android.gms.maps.model.LatLng;
-import com.example.liusu.travelapp.Database;
-import com.example.liusu.travelapp.MapActivity;
 
 import java.util.List;
 
@@ -69,7 +69,7 @@ public class Tab2 extends Fragment{
     public void update() {
         String nextDestination = acTextView.getText().toString();
         Database db = new Database();
-        String attractionName = MapActivity.getResult(nextDestination,db.getData());
+        String attractionName = EditDistance.getResult(nextDestination,db.getData());
         setNextDestination(attractionName);
         displayDestination.setText(locationOfNextDestination.toString());
         getActivity().startService(new Intent(getActivity(), CheckLocationBackground.class));

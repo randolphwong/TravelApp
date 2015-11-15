@@ -29,27 +29,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".MapActivity"
-            android:configChanges="orientation|screenSize"
-            android:label="@string/title_activity_map" >
-        </activity>
-
-        <!--
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="@string/google_maps_key" />
-        -->
-
-        <activity
-            android:name=".MapsActivity"
-            android:label="@string/title_activity_maps" >
-        </activity>
-        <!--
-            meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyBOw9Gl1m1DRrV0bNnyi_uphhwbIHQBeJQ"/
-        -->
 
         <meta-data
             android:name="com.google.android.gms.version"

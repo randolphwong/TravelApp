@@ -24,11 +24,6 @@ import android.widget.Button;
 
 import java.util.ArrayList;
 
-import com.example.liusu.travelapp.Database;
-import com.example.liusu.travelapp.MainActivity;
-import com.example.liusu.travelapp.MapActivity;
-import com.example.liusu.travelapp.R;
-
 import com.example.liusu.travelapp.functionone.RouteInfo;
 import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.*;
@@ -36,6 +31,9 @@ import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 
 import com.example.liusu.travelapp.functionone.AttractionDatabase;
 import com.example.liusu.travelapp.functionone.PathPlanner;
+import com.example.liusu.travelapp.functiontwo.Database;
+import com.example.liusu.travelapp.functiontwo.EditDistance;
+import com.example.liusu.travelapp.R;
 
 
 public class Tab1 extends Fragment {
@@ -122,28 +120,6 @@ public class Tab1 extends Fragment {
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(coord, 14));
     }
 
-    public static int minimum(int a, int b, int c) {
-        return Math.min(Math.min(a, b), c);
-    }
-
-    public static int computeLevenshteinDistance(CharSequence lhs, CharSequence rhs) {
-        int[][] distance = new int[lhs.length() + 1][rhs.length() + 1];
-
-        for (int i = 0; i <= lhs.length(); i++)
-            distance[i][0] = i;
-        for (int j = 1; j <= rhs.length(); j++)
-            distance[0][j] = j;
-
-        for (int i = 1; i <= lhs.length(); i++)
-            for (int j = 1; j <= rhs.length(); j++)
-                distance[i][j] = minimum(
-                        distance[i - 1][j] + 1,
-                        distance[i][j - 1] + 1,
-                        distance[i - 1][j - 1] + ((lhs.charAt(i - 1) == rhs.charAt(j - 1)) ? 0 : 1));
-
-        return distance[lhs.length()][rhs.length()];
-    }
-
     public void search(View view) {
 
         Database base = new Database();
@@ -152,7 +128,7 @@ public class Tab1 extends Fragment {
         EditText et = (EditText) v.findViewById(R.id.editText);
         CharSequence inp = et.getText().toString().toLowerCase();
 
-        String result = getResult(inp, database);
+        String result = EditDistance.getResult(inp, database);
         //Toast.makeText(getContext(), result, Toast.LENGTH_SHORT).show();
 
         if (attraction_database.isUpdated()) {
@@ -259,21 +235,5 @@ public class Tab1 extends Fragment {
             polylines.get(i).remove();
         }
         polylines.clear();
-    }
-
-    public String getResult(CharSequence input, CharSequence[][] database){
-        String result = "";
-        int currentEditDistance = input.toString().length();
-        int currentRow = 0;
-        for(int i = 0 ; i < database.length ; i++){
-            for(int j = 0 ; j < database[i].length ; j++){
-                if(computeLevenshteinDistance(input,database[i][j]) < currentEditDistance){
-                    currentEditDistance = computeLevenshteinDistance(input,database[i][j]);
-                    result = database[i][j].toString();
-                    currentRow = i;
-                }
-            }
-        }
-        return database[currentRow][database[currentRow].length-1].toString();
     }
 }
