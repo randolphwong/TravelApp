@@ -3,38 +3,40 @@ package com.example.liusu.travelapp.UI;
 /**
  * Created by lx on 2015/11/8.
  */
-import android.content.Intent;
+
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 import android.widget.ToggleButton;
-import android.widget.Button;
-import android.widget.AutoCompleteTextView;
-import android.widget.ArrayAdapter;
+
+import com.example.liusu.travelapp.FunctionOne.AttractionDatabase;
+import com.example.liusu.travelapp.FunctionOne.PathPlanner;
+import com.example.liusu.travelapp.FunctionOne.RouteInfo;
+import com.example.liusu.travelapp.FunctionTwo.Database;
+import com.example.liusu.travelapp.FunctionTwo.EditDistance;
+import com.example.liusu.travelapp.R;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.ArrayList;
-
-import com.example.liusu.travelapp.functionone.RouteInfo;
-import com.google.android.gms.maps.*;
-import com.google.android.gms.maps.model.*;
-
-import com.example.liusu.travelapp.functionone.AttractionDatabase;
-import com.example.liusu.travelapp.functionone.PathPlanner;
-import com.example.liusu.travelapp.functiontwo.Database;
-import com.example.liusu.travelapp.functiontwo.EditDistance;
-import com.example.liusu.travelapp.R;
 
 
 public class Tab1 extends Fragment {

@@ -1,7 +1,9 @@
 package com.example.liusu.travelapp.UI;
 
-import android.content.Intent;
 import android.content.Context;
+import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -11,15 +13,13 @@ import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.location.Address;
-import android.location.Geocoder;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.liusu.travelapp.AdditionalFunction.CheckLocationBackground;
-import com.example.liusu.travelapp.functiontwo.Database;
-import com.example.liusu.travelapp.functiontwo.EditDistance;
+import com.example.liusu.travelapp.FunctionTwo.Database;
+import com.example.liusu.travelapp.FunctionTwo.EditDistance;
 import com.example.liusu.travelapp.R;
 import com.google.android.gms.maps.model.LatLng;
 
