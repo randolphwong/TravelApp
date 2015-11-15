@@ -183,7 +183,7 @@ public class Tab1 extends Fragment {
 
                 ArrayList<RouteInfo> path = PathPlanner.getPath(attraction_database.nameOf(0), budget, attraction_database);
                 plotPath(path);
-                Toast.makeText(getContext(), String.format("Journey time: %dmins\nJourney cost: $%f",
+                Toast.makeText(getContext(), String.format("Journey time: %dmins\nJourney cost: $%.2f",
                         PathPlanner.durationOf(path, attraction_database), PathPlanner.costOf(path, attraction_database)), Toast.LENGTH_SHORT).show();
         }
         else {

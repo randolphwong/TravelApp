@@ -1,7 +1,5 @@
 package com.example.liusu.travelapp.functionone;
 
-import android.util.Log;
-
 import java.util.HashMap;
 
 public class CostDatabase {
@@ -20,9 +18,6 @@ public class CostDatabase {
     }
 
     public int timeBetween(Integer source, Integer destination, TransportMode transport_mode) {
-        //Log.i("e", "source: " + source);
-        //Log.i("e", "destination: " + destination);
-        //Log.i("e", "mode: " + transport_mode);
         return database.get(source).get(destination).getDuration(transport_mode);
     }
 
