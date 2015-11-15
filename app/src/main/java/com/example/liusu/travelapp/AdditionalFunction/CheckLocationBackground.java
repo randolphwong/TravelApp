@@ -1,14 +1,14 @@
 package com.example.liusu.travelapp.AdditionalFunction;
 
 import android.app.NotificationManager;
+import android.app.Service;
 import android.content.Intent;
 import android.location.Location;
-import android.support.v4.app.NotificationCompat;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
-import android.app.Service;
-import android.os.IBinder;
 
 import com.example.liusu.travelapp.R;
 import com.example.liusu.travelapp.UI.Tab2;
@@ -30,7 +30,7 @@ public class CheckLocationBackground extends Service implements GoogleApiClient.
     public String currentLatitude, currentLongitude;
     public Location myCurrentLocation;
     public String mLastUpdateTime;
-    private final static int proximity = 20000;
+    private final static int proximity = 500;
     NotificationCompat.Builder mBuilder =
             new NotificationCompat.Builder(this)
                     .setSmallIcon(R.drawable.cast_ic_notification_0)
