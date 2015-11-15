@@ -15,7 +15,9 @@
         android:id="@+id/update"
         android:onClick="update"
         android:layout_below="@+id/display"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:minHeight="50dp"
+        android:minWidth="100dp" />
 
     <Button
         android:layout_width="wrap_content"
@@ -24,7 +26,9 @@
         android:id="@+id/stop"
         android:onClick="reachDestination"
         android:layout_below="@+id/display"
-        android:layout_toEndOf="@+id/update" />
+        android:layout_toEndOf="@+id/update"
+        android:minHeight="50dp"
+        android:minWidth="100dp" />
 
     <AutoCompleteTextView
         android:layout_width="fill_parent"

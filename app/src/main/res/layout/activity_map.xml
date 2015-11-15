@@ -23,7 +23,9 @@
         android:id="@+id/search"
         android:onClick="search"
         android:layout_below="@+id/editText"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:minHeight="45dp"
+        android:minWidth="65dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -39,7 +41,7 @@
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
         class="com.google.android.gms.maps.SupportMapFragment"
-        android:layout_alignParentEnd="true"
+        android:layout_alignParentEnd="false"
         android:layout_below="@+id/search" />
 
     <Button
@@ -48,6 +50,8 @@
         android:text="Plot"
         android:id="@+id/buttonPlot"
         android:onClick="onPlot"
+        android:minHeight="45dp"
+        android:minWidth="70dp"
         android:layout_above="@+id/map"
         android:layout_alignEnd="@+id/map" />
 
@@ -79,6 +83,8 @@
         android:layout_centerHorizontal="true"
         android:textOn="Straight Route"
         android:textOff="Exact Route"
-        android:onClick="onChangePlotLine"/>
+        android:onClick="onChangePlotLine"
+        android:minHeight="45dp"
+        android:minWidth="70dp" />
 
 </RelativeLayout>
