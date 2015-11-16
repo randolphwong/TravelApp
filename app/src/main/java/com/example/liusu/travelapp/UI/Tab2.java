@@ -12,10 +12,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.webkit.WebChromeClient;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.Toast;
+import android.widget.ProgressBar;
 
 import com.example.liusu.travelapp.AdditionalFunction.CheckLocationBackground;
 import com.example.liusu.travelapp.R;
@@ -36,17 +38,42 @@ public class Tab2 extends Fragment{
     ArrayAdapter<String> adapter;
     private Geocoder geocoder;
     private WebView wv1;
+    private ProgressBar mProgressBar;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         context = getContext();
         v = inflater.inflate(R.layout.tab_2,container,false);
         wv1 = (WebView) v.findViewById(R.id.webView);
-        wv1.setWebViewClient(new MyBrowser());
         wv1.getSettings().setLoadsImagesAutomatically(true);
         wv1.getSettings().setJavaScriptEnabled(true);
+        wv1.getSettings().setSupportMultipleWindows(true);
         wv1.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
-        wv1.loadUrl("https://www.tripadvisor.com.sg");
+        mProgressBar = (ProgressBar) v.findViewById(R.id.progressBar);
+		mProgressBar.setMax(100);
+
+        wv1.setWebChromeClient(new WebChromeClient(){
+            @Override
+            public void onProgressChanged(WebView view, int newProgress) {			
+                mProgressBar.setProgress(newProgress == 100 ? 0 : newProgress);
+                super.onProgressChanged(view, newProgress);
+            }
+        });
+
+        wv1.setWebViewClient(new WebViewClient() {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                view.loadUrl(url);
+                return false;
+            }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                mProgressBar.setProgress(0);
+            }
+        });
+
+        displayWeb("https://www.tripadvisor.com.sg");
 
         Database db = new Database();
         adapter = new ArrayAdapter<>(context,android.R.layout.select_dialog_singlechoice,db.getList());
@@ -75,19 +102,12 @@ public class Tab2 extends Fragment{
         return v;
     }
 
-    private class MyBrowser extends WebViewClient {
-        @Override
-        public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            view.loadUrl(url);
-            return true;
-        }
-    }
-
     public void reachDestination() {
         getActivity().stopService(new Intent(getActivity(), CheckLocationBackground.class));
     }
     public void update() {
         String nextDestination = acTextView.getText().toString();
+        acTextView.setText("");
         Database db = new Database();
         String attractionName = EditDistance.getResult(nextDestination,db.getData());
         displayWeb(GetUrl.getUrl(attractionName));
@@ -111,6 +131,7 @@ public class Tab2 extends Fragment{
     public void displayWeb(String url){
 
         if(url != null){
+            mProgressBar.setProgress(0);
             wv1.loadUrl(url);
         }else{
             Toast.makeText(context, "Null URL" ,Toast.LENGTH_SHORT).show();
