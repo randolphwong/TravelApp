@@ -15,7 +15,6 @@ import android.webkit.WebViewClient;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.liusu.travelapp.AdditionalFunction.CheckLocationBackground;
@@ -34,7 +33,6 @@ public class Tab2 extends Fragment{
     double longitude;
     public static LatLng locationOfNextDestination;
     private  AutoCompleteTextView acTextView;
-    private TextView displayDestination;
     ArrayAdapter<String> adapter;
     private Geocoder geocoder;
     private WebView wv1;
@@ -43,16 +41,19 @@ public class Tab2 extends Fragment{
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         context = getContext();
         v = inflater.inflate(R.layout.tab_2,container,false);
+        wv1 = (WebView) v.findViewById(R.id.webView);
+        wv1.setWebViewClient(new MyBrowser());
+        wv1.getSettings().setLoadsImagesAutomatically(true);
+        wv1.getSettings().setJavaScriptEnabled(true);
+        wv1.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
+        wv1.loadUrl("https://www.tripadvisor.com.sg");
+
         Database db = new Database();
         adapter = new ArrayAdapter<>(context,android.R.layout.select_dialog_singlechoice,db.getList());
         acTextView= (AutoCompleteTextView)v.findViewById(R.id.autoCompleteTextView);
         acTextView.setThreshold(1);
         acTextView.setAdapter(adapter);
-        displayDestination = (TextView) v.findViewById(R.id.display);
         geocoder = new Geocoder(context);
-
-        wv1 = (WebView) v.findViewById(R.id.webView);
-        wv1.setWebViewClient(new MyBrowser());
 
         Button update = (Button) v.findViewById(R.id.update);
         update.setOnClickListener(new View.OnClickListener()
@@ -89,10 +90,10 @@ public class Tab2 extends Fragment{
         String nextDestination = acTextView.getText().toString();
         Database db = new Database();
         String attractionName = EditDistance.getResult(nextDestination,db.getData());
-        setNextDestination(attractionName);
-        displayDestination.setText(locationOfNextDestination.toString());
-        getActivity().startService(new Intent(getActivity(), CheckLocationBackground.class));
         displayWeb(GetUrl.getUrl(attractionName));
+        setNextDestination(attractionName);
+        getActivity().startService(new Intent(getActivity(), CheckLocationBackground.class));
+
     }
     public void setNextDestination(String attraction){
 
@@ -108,9 +109,7 @@ public class Tab2 extends Fragment{
     }
 
     public void displayWeb(String url){
-        wv1.getSettings().setLoadsImagesAutomatically(true);
-        wv1.getSettings().setJavaScriptEnabled(true);
-        wv1.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
+
         if(url != null){
             wv1.loadUrl(url);
         }else{

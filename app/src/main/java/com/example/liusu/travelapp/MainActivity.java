@@ -1,11 +1,11 @@
 package com.example.liusu.travelapp;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.support.v4.view.ViewPager;
-import android.support.v7.widget.Toolbar;
 
 import com.example.liusu.travelapp.UI.SlidingTabLayout;
 import com.example.liusu.travelapp.UI.ViewPagerAdapter;
@@ -55,7 +55,6 @@ public class MainActivity extends AppCompatActivity {
         tabs.setViewPager(pager);
 
     }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
