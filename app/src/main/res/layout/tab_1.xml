@@ -40,8 +40,8 @@
     <com.google.android.gms.maps.MapView android:id="@+id/mapview"
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
-        android:layout_alignParentEnd="true"
-        android:layout_below="@+id/search" />
+        android:layout_below="@+id/search"
+        android:layout_alignParentEnd="true" />
 
     <Button
         android:layout_width="wrap_content"
@@ -85,5 +85,30 @@
         android:layout_centerHorizontal="true"
         android:minHeight="45dp"
         android:minWidth="100dp" />
+
+    <ImageView
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:id="@+id/imageView"
+        android:src="@mipmap/taxi1"
+        android:layout_alignTop="@+id/mapview"
+        android:layout_alignParentStart="true" />
+
+    <ImageView
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:id="@+id/imageView2"
+        android:src="@mipmap/bus"
+        android:layout_alignTop="@+id/mapview"
+        android:layout_marginLeft="8dp"
+        android:layout_toEndOf="@+id/imageView" />
+
+    <ImageView
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:id="@+id/imageView3"
+        android:src="@mipmap/walk"
+        android:layout_alignTop="@+id/mapview"
+        android:layout_alignEnd="@+id/search" />
 
 </RelativeLayout>
